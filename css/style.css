@@ -160,6 +160,7 @@ body::after {
   inset: 0;
   z-index: 30;
   overflow: hidden;
+  cursor: pointer; /* a click anywhere opens the next screen */
   background: var(--bg);
   transform-origin: 30% 100%;
 }

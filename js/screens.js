@@ -105,12 +105,24 @@ function initIntro(onLeave) {
     }, reduceMotion ? 0 : 900)
   }
 
-  addEventListener('wheel', (e) => e.deltaY > 8 && leave(), { passive: true })
-  addEventListener('keydown', (e) => ['ArrowDown', 'PageDown', ' '].includes(e.key) && leave())
+  // a trackpad sends many tiny steps, so the scroll is added up instead of judged step by step;
+  // a scroll made while the rings were still growing is remembered and used as soon as they finish
+  let scrolled = 0
+  addEventListener(
+    'wheel',
+    (e) => {
+      scrolled = Math.max(0, scrolled + e.deltaY)
+      if (scrolled > 30) leave()
+    },
+    { passive: true }
+  )
+  setTimeout(() => scrolled > 30 && leave(), RINGS * ringStep + 650)
+  addEventListener('keydown', (e) => ['ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key) && leave())
   let touchY = null
   addEventListener('touchstart', (e) => (touchY = e.touches[0].clientY), { passive: true })
   addEventListener('touchmove', (e) => touchY !== null && touchY - e.touches[0].clientY > 30 && leave(), { passive: true })
-  $('#introHint').addEventListener('click', () => {
+  // a click anywhere on the first screen works too, and that click also lets the browser play sound
+  intro.addEventListener('click', () => {
     canLeave = true
     leave()
   })
