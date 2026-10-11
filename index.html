@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Zib-Zib sinth</title>
-    <link rel="stylesheet" href="css/reset.css" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="stylesheets/style.css" />
     <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
-    <script type="module" src="js/main.js"></script>
+    <script src="javascripts/scripts.js" defer></script>
   </head>
+
   <body class="is-locked">
     <section class="Intro" id="intro">
       <div class="Artboard">
@@ -22,33 +23,19 @@
           <span class="Title__main">Zib-Zib</span>
           <span class="Title__sub">sinth</span>
         </h1>
-        <button
-          class="ScrollHint ScrollHint--intro"
-          id="introHint"
-          type="button"
-          aria-label="Листай вниз"
-        >
-          <svg class="ScrollHint__arrow" viewBox="0 0 11 17" aria-hidden="true">
-            <path
-              d="M4.99262 16.7751C5.28551 17.068 5.76039 17.068 6.05328 16.7751L10.8262 12.0022C11.1191 11.7093 11.1191 11.2344 10.8262 10.9415C10.5334 10.6486 10.0585 10.6486 9.76559 10.9415L5.52295 15.1842L1.28031 10.9415C0.987415 10.6486 0.512541 10.6486 0.219648 10.9415C-0.0732454 11.2344 -0.0732454 11.7093 0.219648 12.0022L4.99262 16.7751ZM5.52295 3.27039L4.77295 3.27039L4.77295 16.2448L5.52295 16.2448L6.27295 16.2448L6.27295 3.27039L5.52295 3.27039Z"
-            />
-          </svg>
+
+        <button class="ScrollHint ScrollHint--intro" id="introHint" type="button" aria-label="Листай вниз">
+          <img class="ScrollHint__arrow" src="images/arrow.svg" alt="" />
           <span class="ScrollHint__label">scroll</span>
         </button>
       </div>
     </section>
     <main class="Stage" id="stage">
       <section class="AlienScreen">
-        <div class="Marquee Marquee--top" aria-hidden="true">
-          <div class="Marquee__track" data-marquee></div>
-        </div>
+        <div class="Marquee Marquee--top" aria-hidden="true"><div class="Marquee__track" data-marquee></div></div>
 
         <div class="Steps Steps--left" id="stepsLeft" aria-hidden="true"></div>
-        <div
-          class="Steps Steps--right"
-          id="stepsRight"
-          aria-hidden="true"
-        ></div>
+        <div class="Steps Steps--right" id="stepsRight" aria-hidden="true"></div>
 
         <div class="Artboard">
           <div class="Horizon" aria-hidden="true">
@@ -62,91 +49,34 @@
             <span class="Title__sub">sinth</span>
           </h2>
 
-          <button
-            class="PlayButton"
-            id="playButton"
-            type="button"
-            aria-pressed="false"
-            aria-label="Включить синты"
-          >
-            <svg
-              class="PlayButton__icon"
-              viewBox="0 0 44.51 44.51"
-              aria-hidden="true"
-            >
-              <path
-                d="M37 19.5a3 3 0 0 1 0 5.2L12.5 38.8A3 3 0 0 1 8 36.2V8.3a3 3 0 0 1 4.5-2.6Z"
-              />
-            </svg>
+          <button class="PlayButton" id="playButton" type="button" aria-pressed="false" aria-label="Включить синты">
+            <img class="PlayButton__icon" src="images/play.svg" alt="" />
           </button>
 
-          <button
-            class="ScrollHint ScrollHint--alien"
-            id="alienHint"
-            type="button"
-            aria-label="Листай к синтам"
-          >
-            <svg
-              class="ScrollHint__arrow"
-              viewBox="0 0 11 17"
-              aria-hidden="true"
-            >
-              <path
-                d="M4.99262 16.7751C5.28551 17.068 5.76039 17.068 6.05328 16.7751L10.8262 12.0022C11.1191 11.7093 11.1191 11.2344 10.8262 10.9415C10.5334 10.6486 10.0585 10.6486 9.76559 10.9415L5.52295 15.1842L1.28031 10.9415C0.987415 10.6486 0.512541 10.6486 0.219648 10.9415C-0.0732454 11.2344 -0.0732454 11.7093 0.219648 12.0022L4.99262 16.7751ZM5.52295 3.27039L4.77295 3.27039L4.77295 16.2448L5.52295 16.2448L6.27295 16.2448L6.27295 3.27039L5.52295 3.27039Z"
-              />
-            </svg>
+          <button class="ScrollHint ScrollHint--alien" id="alienHint" type="button" aria-label="Листай к синтам">
+            <img class="ScrollHint__arrow" src="images/arrow.svg" alt="" />
             <span class="ScrollHint__label">scroll</span>
           </button>
 
-          <button
-            class="HelpButton"
-            id="helpButton"
-            type="button"
-            aria-label="Словарь"
-          >
+          <button class="HelpButton" id="helpButton" type="button" aria-label="Словарь">
             <span class="HelpButton__glow" aria-hidden="true"></span>
             <span class="HelpButton__face">?</span>
           </button>
 
-          <img
-            class="Alien"
-            id="alien"
-            src="images/alien.webp"
-            alt="Пришелец Zib-Zib"
-          />
+          <img class="Alien" id="alien" src="images/alien.webp" alt="Пришелец Zib-Zib" />
         </div>
       </section>
       <section class="Language" id="language" hidden>
         <div class="Artboard">
-          <div
-            class="Language__card"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="languageTitle"
-          >
+          <div class="Language__card" role="dialog" aria-modal="true" aria-labelledby="languageTitle">
             <h2 class="Title Title--language" id="languageTitle">
               <span class="Title__main">Zib-Zib</span>
               <span class="Title__sub">language</span>
             </h2>
-            <p
-              class="Language__column Language__column--left"
-              id="languageLeft"
-            ></p>
-            <p
-              class="Language__column Language__column--right"
-              id="languageRight"
-            ></p>
-            <button
-              class="Language__close"
-              id="languageClose"
-              type="button"
-              aria-label="Закрыть"
-            >
-              <svg viewBox="0 0 65 65" aria-hidden="true">
-                <path
-                  d="M20.8 48.75L32.5 37.05L44.2 48.75L48.75 44.2L37.05 32.5L48.75 20.8L44.2 16.25L32.5 27.95L20.8 16.25L16.25 20.8L27.95 32.5L16.25 44.2L20.8 48.75ZM32.5 65C28.0042 65 23.7792 64.1463 19.825 62.439C15.8708 60.7316 12.4312 58.4166 9.50625 55.4937C6.58125 52.5709 4.26617 49.1313 2.561 45.175C0.855837 41.2187 0.00217078 36.9937 4.11392e-06 32.5C-0.00216255 28.0063 0.851504 23.7813 2.561 19.825C4.2705 15.8687 6.58558 12.4291 9.50625 9.50625C12.4269 6.58342 15.8665 4.26833 19.825 2.561C23.7835 0.853667 28.0085 0 32.5 0C36.9915 0 41.2165 0.853667 45.175 2.561C49.1335 4.26833 52.5731 6.58342 55.4937 9.50625C58.4144 12.4291 60.7305 15.8687 62.4422 19.825C64.1539 23.7813 65.0065 28.0063 65 32.5C64.9935 36.9937 64.1398 41.2187 62.439 45.175C60.7381 49.1313 58.4231 52.5709 55.4937 55.4937C52.5644 58.4166 49.1248 60.7327 45.175 62.4422C41.2251 64.1517 37.0001 65.0043 32.5 65Z"
-                />
-              </svg>
+            <p class="Language__column Language__column--left" id="languageLeft"></p>
+            <p class="Language__column Language__column--right" id="languageRight"></p>
+            <button class="Language__close" id="languageClose" type="button" aria-label="Закрыть">
+              <img src="images/close.svg" alt="" />
             </button>
           </div>
         </div>
@@ -159,17 +89,13 @@
               <span class="Title__sub">sinth</span>
             </h2>
             <p class="Hello__text" id="helloText"></p>
-            <button class="Hello__start" id="startButton" type="button">
-              Начать
-            </button>
+            <button class="Hello__start" id="startButton" type="button">Начать</button>
           </div>
         </div>
       </section>
     </main>
     <section class="Synths" id="synths" aria-label="Синтезаторы">
-      <div class="Marquee" aria-hidden="true">
-        <div class="Marquee__track" data-marquee></div>
-      </div>
+      <div class="Marquee" aria-hidden="true"><div class="Marquee__track" data-marquee></div></div>
       <div class="Artboard Artboard--synths">
         <div class="Synths__header" aria-hidden="true"></div>
         <div class="Synths__grid" id="synthGrid"></div>

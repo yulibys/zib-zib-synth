@@ -1,0 +1,16 @@
+@media (prefers-reduced-motion: reduce) {
+  .Ring {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
+  .Stage.has-steps .Steps__field {
+    animation: none;
+    opacity: 1;
+  }
+  .ScrollHint,
+  .Stage.has-alien .ScrollHint--alien,
+  .Marquee__track {
+    animation: none;
+    opacity: 1;
+  }
+}

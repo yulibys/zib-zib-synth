@@ -1,0 +1,95 @@
+.Ring {
+  animation: ringGrow 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  animation-delay: calc(var(--i) * 0.3s);
+}
+
+@keyframes ringGrow {
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.Intro.is-leaving {
+  animation: shakeOff 0.9s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+
+@keyframes shakeOff {
+  0% { transform: none; opacity: 1; }
+  12% { transform: rotate(2deg) translateX(1.5vw); }
+  24% { transform: rotate(-3deg) translateX(-2vw); }
+  36% { transform: rotate(1.5deg); opacity: 1; }
+  100% { transform: translate(-12vw, 70vh) rotate(-18deg) scale(0.9); opacity: 0; }
+}
+
+.ScrollHint {
+  animation: hintBreath 1.6s ease-in-out infinite;
+}
+
+@keyframes hintBreath {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(calc(8 * var(--u))); }
+}
+
+.Marquee__track {
+  animation: marquee 18s linear infinite;
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+.PlayButton {
+  transition: box-shadow 0.3s, transform 0.15s;
+}
+
+.Alien {
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.Stage.has-alien .Alien {
+  opacity: 1;
+  transform: none;
+}
+
+.ScrollHint--alien {
+  opacity: 0;
+  animation: none;
+}
+
+.Stage.has-alien .ScrollHint--alien {
+  animation: hintBreath 1.6s ease-in-out infinite;
+}
+
+.Stage.has-steps .Steps__field {
+  animation: stepsSlide var(--lap, 14s) linear infinite;
+}
+
+@keyframes stepsSlide {
+  to { transform: translateY(calc(var(--period) * var(--u))); }
+}
+
+.Language {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+}
+
+.Language__close {
+  transition: transform 0.15s;
+}
+
+.Hello {
+  transition: opacity 0.4s;
+}
+
+.Hello.is-leaving {
+  opacity: 0;
+}
+
+.Hello__start {
+  transition: transform 0.15s;
+}
+
+.TypeButton {
+  transition: background 0.2s, color 0.2s;
+}

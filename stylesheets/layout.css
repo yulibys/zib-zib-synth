@@ -1,29 +1,4 @@
-/* Zib-Zib sinth
-   Every size, position, color and effect below is taken from the Figma file "alien", Page 3
-   (frames Desktop 8, 7, 12, 18, 15, 16). The design is a 1440x900 artboard; 1 design pixel = var(--u). */
-
-@font-face {
-  font-family: 'Desyatiy';
-  src: url('../fonts/Desyatiy-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Desyatiy';
-  src: url('../fonts/Desyatiy-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TOYZ';
-  src: url('../fonts/TOYZ.ttf') format('truetype');
-  font-display: swap;
-}
-
 :root {
-  /* colors from the layout */
   --bg: #1e1d1d;
   --bg-2: #1c1b1b;
   --white: #ffffff;
@@ -32,14 +7,10 @@
   --green-text: #55632e;
   --mist: #f2f9fe;
   --grey: #d9d9d9;
-
-  /* 1 design pixel */
   --u: min(calc(100vw / 1440), calc(100vh / 900));
-
   color-scheme: dark;
 }
 
-/* reset.css (from the course boilerplate) is loaded before this file */
 *,
 *::before,
 *::after {
@@ -79,7 +50,6 @@ input:focus-visible {
   display: none !important;
 }
 
-/* Figma "Noise" effect, black 17% */
 body::after {
   content: '';
   position: fixed;
@@ -87,10 +57,9 @@ body::after {
   z-index: 100;
   pointer-events: none;
   opacity: 0.17;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.4 -.4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url('../images/noise.svg');
 }
 
-/* the 1440x900 artboard, centered in the viewport */
 .Artboard {
   position: absolute;
   left: 50%;
@@ -100,7 +69,6 @@ body::after {
   transform: translate(-50%, -50%);
 }
 
-/* ------------------------------------------------------------------ Title */
 .Title {
   position: absolute;
   margin: 0;
@@ -116,7 +84,6 @@ body::after {
   display: block;
 }
 
-/* Desktop 8: 96 / 48, group at 549.36, 382.29 */
 .Title--intro {
   left: calc(549.36 * var(--u));
   top: calc(382.29 * var(--u));
@@ -136,7 +103,6 @@ body::after {
   line-height: calc(50 * var(--u));
 }
 
-/* Desktop 12: 128 / 64, group at 491, 128.5 */
 .Title--alien {
   left: calc(491 * var(--u));
   top: calc(128.5 * var(--u));
@@ -154,18 +120,16 @@ body::after {
   line-height: calc(67 * var(--u));
 }
 
-/* ------------------------------------------------------------------ Intro (Desktop 8) */
 .Intro {
   position: fixed;
   inset: 0;
   z-index: 30;
   overflow: hidden;
-  cursor: pointer; /* a click anywhere opens the next screen */
+  cursor: pointer;
   background: var(--bg);
   transform-origin: 30% 100%;
 }
 
-/* each ring: dark ellipse with a white and a green glow; all centered at 720, 450 */
 .Ring {
   position: absolute;
   left: calc(720 * var(--u));
@@ -179,37 +143,33 @@ body::after {
     0 0 calc(76.4 * var(--u)) calc(51 * var(--u)) var(--green);
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.6);
-  animation: ringGrow 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
-  animation-delay: calc(var(--i) * 0.3s);
 }
 
-.Ring--1 { --w: 528.96; --h: 408.51; }
-.Ring--2 { --w: 755.59; --h: 583.54; }
-.Ring--3 { --w: 1015.69; --h: 784.41; }
-.Ring--4 { --w: 1263.9; --h: 976.1; }
-.Ring--5 { --w: 1520.9; --h: 1174.58; }
-
-@keyframes ringGrow {
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
+.Ring--1 {
+  --w: 528.96;
+  --h: 408.51;
 }
 
-/* leaving: the whole screen is shaken off at an angle and fades out */
-.Intro.is-leaving {
-  animation: shakeOff 0.9s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+.Ring--2 {
+  --w: 755.59;
+  --h: 583.54;
 }
 
-@keyframes shakeOff {
-  0% { transform: none; opacity: 1; }
-  12% { transform: rotate(2deg) translateX(1.5vw); }
-  24% { transform: rotate(-3deg) translateX(-2vw); }
-  36% { transform: rotate(1.5deg); opacity: 1; }
-  100% { transform: translate(-12vw, 70vh) rotate(-18deg) scale(0.9); opacity: 0; }
+.Ring--3 {
+  --w: 1015.69;
+  --h: 784.41;
 }
 
-/* ------------------------------------------------------------------ ScrollHint */
+.Ring--4 {
+  --w: 1263.9;
+  --h: 976.1;
+}
+
+.Ring--5 {
+  --w: 1520.9;
+  --h: 1174.58;
+}
+
 .ScrollHint {
   position: absolute;
   display: flex;
@@ -219,13 +179,12 @@ body::after {
   font-weight: 300;
   font-size: calc(16 * var(--u));
   line-height: calc(17 * var(--u));
-  animation: hintBreath 1.6s ease-in-out infinite;
 }
 
 .ScrollHint__arrow {
   width: calc(11 * var(--u));
   height: calc(17 * var(--u));
-  fill: var(--white);
+  display: block;
 }
 
 .ScrollHint--intro {
@@ -238,13 +197,6 @@ body::after {
   top: calc(410.75 * var(--u));
 }
 
-/* fades in and out and floats up and down: a call to scroll */
-@keyframes hintBreath {
-  0%, 100% { opacity: 0.3; transform: translateY(0); }
-  50% { opacity: 1; transform: translateY(calc(8 * var(--u))); }
-}
-
-/* ------------------------------------------------------------------ Marquee */
 .Marquee {
   position: absolute;
   left: 0;
@@ -260,7 +212,6 @@ body::after {
   display: flex;
   width: max-content;
   padding-top: calc(2.69 * var(--u));
-  animation: marquee 18s linear infinite;
 }
 
 .Marquee__track span {
@@ -272,11 +223,6 @@ body::after {
   white-space: nowrap;
 }
 
-@keyframes marquee {
-  to { transform: translateX(-50%); }
-}
-
-/* ------------------------------------------------------------------ AlienScreen (Desktop 12) */
 .Stage {
   position: relative;
   height: 200vh;
@@ -290,7 +236,6 @@ body::after {
   background: var(--bg);
 }
 
-/* the planet horizon: green glow, misty light, dark planet */
 .Horizon > div {
   position: absolute;
   border-radius: 50%;
@@ -331,14 +276,12 @@ body::after {
   padding: calc(10 * var(--u));
   border-radius: 50%;
   background: var(--white);
-  transition: box-shadow 0.3s, transform 0.15s;
 }
 
 .PlayButton:active {
   transform: scale(0.96);
 }
 
-/* the glow layers that are hidden in the layout (Ellipse 6 and 7) show while the sound plays */
 .PlayButton[aria-pressed='true'] {
   box-shadow:
     0 0 calc(5.8 * var(--u)) calc(1 * var(--u)) rgba(255, 255, 255, 0.93),
@@ -348,7 +291,6 @@ body::after {
 .PlayButton__icon {
   width: 100%;
   height: 100%;
-  fill: var(--bg);
 }
 
 .HelpButton {
@@ -381,7 +323,6 @@ body::after {
   line-height: 1;
 }
 
-/* Component 1: the alien rises 26px with Smart animate, ease out, 0.3s */
 .Alien {
   position: absolute;
   left: calc(470.28 * var(--u));
@@ -392,26 +333,8 @@ body::after {
   object-position: 50% 100%;
   opacity: 0;
   transform: translateY(calc(26 * var(--u)));
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
-.Stage.has-alien .Alien {
-  opacity: 1;
-  transform: none;
-}
-
-.ScrollHint--alien {
-  opacity: 0;
-  animation: none;
-}
-
-.Stage.has-alien .ScrollHint--alien {
-  animation: hintBreath 1.6s ease-in-out infinite;
-}
-
-/* ------------------------------------------------------------------ Steps (Desktop 19) */
-/* tetris-like steps: the whole pattern falls down together, forever.
-   The two columns are pinned to the screen edges, like in the layout, and follow the artboard vertically. */
 .Steps {
   position: absolute;
   top: calc(50% - 450 * var(--u));
@@ -450,26 +373,11 @@ body::after {
   inset: 0;
 }
 
-/* the whole pattern slides down one period and starts over, so the loop has no seam */
-.Stage.has-steps .Steps__field {
-  animation: stepsSlide var(--lap, 14s) linear infinite;
-}
-
-@keyframes stepsSlide {
-  to { transform: translateY(calc(var(--period) * var(--u))); }
-}
-
-/* ------------------------------------------------------------------ Language (Desktop 22) */
 .Language {
   position: fixed;
   inset: 0;
   z-index: 40;
   background: rgba(28, 27, 27, 0.98);
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
 }
 
 .Language__card {
@@ -532,31 +440,23 @@ body::after {
   width: calc(65 * var(--u));
   height: calc(65 * var(--u));
   border-radius: 50%;
-  transition: transform 0.15s;
 }
 
-.Language__close svg {
+.Language__close img {
   display: block;
   width: 100%;
   height: 100%;
-  fill: var(--bg);
 }
 
 .Language__close:hover {
   transform: rotate(90deg);
 }
 
-/* ------------------------------------------------------------------ Hello (Desktop 7) */
 .Hello {
   position: fixed;
   inset: 0;
   z-index: 20;
   background: rgba(28, 27, 27, 0.98);
-  transition: opacity 0.4s;
-}
-
-.Hello.is-leaving {
-  opacity: 0;
 }
 
 .Hello__card {
@@ -604,14 +504,12 @@ body::after {
   color: var(--white);
   font-size: calc(36 * var(--u));
   line-height: calc(38 * var(--u));
-  transition: transform 0.15s;
 }
 
 .Hello__start:active {
   transform: scale(0.97);
 }
 
-/* ------------------------------------------------------------------ Synths (Desktop 16) */
 .Synths {
   --p: 0;
   position: fixed;
@@ -621,7 +519,6 @@ body::after {
   box-shadow:
     0 0 calc(90 * var(--u)) calc(20 * var(--u)) var(--white),
     0 0 calc(138.9 * var(--u)) calc(92 * var(--u)) var(--green);
-  /* at rest its top edge sits right at the bottom of the screen, so the glow above it is already visible */
   transform: translateY(calc((1 - var(--p)) * 100%));
 }
 
@@ -643,9 +540,17 @@ body::after {
   border: calc(2 * var(--u)) solid var(--white);
 }
 
-.Synth--1 { left: calc(69.66 * var(--u)); }
-.Synth--2 { left: calc(505.01 * var(--u)); }
-.Synth--3 { left: calc(934.99 * var(--u)); }
+.Synth--1 {
+  left: calc(69.66 * var(--u));
+}
+
+.Synth--2 {
+  left: calc(505.01 * var(--u));
+}
+
+.Synth--3 {
+  left: calc(934.99 * var(--u));
+}
 
 .Synth__name {
   position: absolute;
@@ -661,7 +566,6 @@ body::after {
   color: var(--bg-2);
 }
 
-/* control block: 330 wide, 51 from the column edge (minus the 2px border) */
 .Control {
   position: absolute;
   left: calc(49.25 * var(--u));
@@ -687,7 +591,6 @@ body::after {
   line-height: calc(17 * var(--u));
 }
 
-/* the pill from the layout: Rectangle 14, radius 29, two inner glows */
 .Pill {
   position: relative;
   width: calc(330 * var(--u));
@@ -699,7 +602,6 @@ body::after {
     inset 0 0 calc(44.3 * var(--u)) calc(10 * var(--u)) var(--green);
 }
 
-/* slider: the pill is the track, a white dot shows the value */
 .Pill__input {
   position: absolute;
   inset: 0;
@@ -727,14 +629,12 @@ body::after {
   outline-offset: 4px;
 }
 
-/* wave type buttons: the selected one is printed white, like the header band */
 .TypeButton {
   display: grid;
   place-items: center;
   font-weight: 300;
   font-size: calc(24 * var(--u));
   line-height: calc(17 * var(--u));
-  transition: background 0.2s, color 0.2s;
 }
 
 .TypeButton[aria-pressed='true'] {
@@ -742,10 +642,21 @@ body::after {
   color: var(--bg-2);
 }
 
-.Control--volume { top: calc(147.87 * var(--u)); }
-.Control--filter { top: calc(230.85 * var(--u)); }
-.Control--effect { top: calc(310.64 * var(--u)); }
-.Control--type { top: calc(430.52 * var(--u)); }
+.Control--volume {
+  top: calc(147.87 * var(--u));
+}
+
+.Control--filter {
+  top: calc(230.85 * var(--u));
+}
+
+.Control--effect {
+  top: calc(310.64 * var(--u));
+}
+
+.Control--type {
+  top: calc(430.52 * var(--u));
+}
 
 .Control--type .Control__list {
   display: grid;
@@ -779,25 +690,14 @@ body::after {
   white-space: nowrap;
 }
 
-.Credits__item--1 { left: calc(131.83 * var(--u)); }
-.Credits__item--2 { left: calc(632.5 * var(--u)); }
-.Credits__item--3 { left: calc(958.88 * var(--u)); }
+.Credits__item--1 {
+  left: calc(131.83 * var(--u));
+}
 
-@media (prefers-reduced-motion: reduce) {
-  .Ring {
-    animation-duration: 0.01s;
-    animation-delay: 0s;
-  }
+.Credits__item--2 {
+  left: calc(632.5 * var(--u));
+}
 
-  .Stage.has-steps .Steps__field {
-    animation: none;
-    opacity: 1;
-  }
-
-  .ScrollHint,
-  .Stage.has-alien .ScrollHint--alien,
-  .Marquee__track {
-    animation: none;
-    opacity: 1;
-  }
+.Credits__item--3 {
+  left: calc(958.88 * var(--u));
 }
