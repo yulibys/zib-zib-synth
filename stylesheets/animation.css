@@ -49,6 +49,11 @@
   transform: none;
 }
 
+.Stage.has-alien.is-alien-off .Alien {
+  opacity: 0;
+  transform: translateY(calc(26 * var(--u)));
+}
+
 .ScrollHint--alien {
   opacity: 0;
   animation: none;

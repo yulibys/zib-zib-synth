@@ -162,13 +162,14 @@ const synths = [
   }
 ]
 
-const alienDelay = 1000
+const alienDelay = 200
 const ringStep = 300
 const stepRow = 24.52
 const stepLap = 14
 
 const nodes = {}
-let isPlaying = false
+let alienOn = true
+let synthsOn = false
 
 function pingPong(audioBuffer) {
   const ctx = Tone.getContext().rawContext
@@ -221,6 +222,7 @@ async function buildAlien() {
 
   Tone.Transport.bpm.value = (60 * 4 * loopBars) / loop.duration
 
+  channel.mute = !alienOn
   nodes.alien = { channel, player }
 }
 
@@ -250,7 +252,7 @@ function buildSynth(s) {
   part.loopEnd = s.sequence.loopEnd
   part.loop = true
 
-  channel.mute = true
+  channel.mute = !synthsOn
   nodes[s.id] = { channel, level, gain: s.gain ?? 0, filter, synth, fx: fxNodes }
   changeValue(s.id, s.effect, s[s.effect])
 }
@@ -286,11 +288,16 @@ async function startAudio() {
   return build()
 }
 
-async function togglePlay() {
+function startSynths() {
+  synthsOn = true
+  synths.forEach((s) => nodes[s.id] && (nodes[s.id].channel.mute = false))
+}
+
+async function toggleAlien() {
   await startAudio()
-  isPlaying = !isPlaying
-  synths.forEach((s) => nodes[s.id] && (nodes[s.id].channel.mute = !isPlaying))
-  return isPlaying
+  alienOn = !alienOn
+  if (nodes.alien) nodes.alien.channel.mute = !alienOn
+  return alienOn
 }
 
 function setOscillator(synth, values) {
@@ -548,9 +555,10 @@ function initStage() {
   const play = $('#playButton')
 
   play.addEventListener('click', async () => {
-    const on = await togglePlay()
+    const on = await toggleAlien()
+    stage.classList.toggle('is-alien-off', !on)
     play.setAttribute('aria-pressed', String(on))
-    play.setAttribute('aria-label', on ? 'Выключить синты' : 'Включить синты')
+    play.setAttribute('aria-label', on ? 'Выключить пришельца' : 'Включить пришельца')
   })
 
   $('#alienHint').addEventListener('click', () => scrollTo({ top: innerHeight, behavior: reduceMotion ? 'auto' : 'smooth' }))
@@ -577,6 +585,7 @@ function initStage() {
     scrollTo(0, 0)
     update()
     stage.classList.add('has-steps')
+    startSynths()
     setTimeout(() => stage.classList.add('has-alien'), reduceMotion ? 0 : alienDelay)
   }
 }
