@@ -9,7 +9,6 @@
     <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
     <script src="javascripts/scripts.js?v=2" defer></script>
   </head>
-
   <body class="is-locked">
     <section class="Intro" id="intro">
       <div class="Artboard">
@@ -18,13 +17,16 @@
         <div class="Ring Ring--3" style="--i: 2"></div>
         <div class="Ring Ring--2" style="--i: 1"></div>
         <div class="Ring Ring--1" style="--i: 0"></div>
-
         <h1 class="Title Title--intro">
           <span class="Title__main">Zib-Zib</span>
           <span class="Title__sub">sinth</span>
         </h1>
-
-        <button class="ScrollHint ScrollHint--intro" id="introHint" type="button" aria-label="Листай вниз">
+        <button
+          class="ScrollHint ScrollHint--intro"
+          id="introHint"
+          type="button"
+          aria-label="Листай вниз"
+        >
           <img class="ScrollHint__arrow" src="images/arrow.svg" alt="" />
           <span class="ScrollHint__label">scroll</span>
         </button>
@@ -32,50 +34,86 @@
     </section>
     <main class="Stage" id="stage">
       <section class="AlienScreen">
-        <div class="Marquee Marquee--top" aria-hidden="true"><div class="Marquee__track" data-marquee></div></div>
-
+        <div class="Marquee Marquee--top" aria-hidden="true">
+          <div class="Marquee__track" data-marquee></div>
+        </div>
         <div class="Steps Steps--left" id="stepsLeft" aria-hidden="true"></div>
-        <div class="Steps Steps--right" id="stepsRight" aria-hidden="true"></div>
-
+        <div
+          class="Steps Steps--right"
+          id="stepsRight"
+          aria-hidden="true"
+        ></div>
         <div class="Artboard">
           <div class="Horizon" aria-hidden="true">
             <div class="Horizon__glow"></div>
             <div class="Horizon__light"></div>
             <div class="Horizon__planet"></div>
           </div>
-
           <h2 class="Title Title--alien">
             <span class="Title__main">Zib-Zib</span>
             <span class="Title__sub">sinth</span>
           </h2>
-
-          <button class="PlayButton" id="playButton" type="button" aria-pressed="true" aria-label="Выключить пришельца">
+          <button
+            class="PlayButton"
+            id="playButton"
+            type="button"
+            aria-pressed="true"
+            aria-label="Выключить пришельца"
+          >
             <img class="PlayButton__icon" src="images/play.svg" alt="" />
           </button>
-
-          <button class="ScrollHint ScrollHint--alien" id="alienHint" type="button" aria-label="Листай к синтам">
+          <button
+            class="ScrollHint ScrollHint--alien"
+            id="alienHint"
+            type="button"
+            aria-label="Листай к синтам"
+          >
             <img class="ScrollHint__arrow" src="images/arrow.svg" alt="" />
             <span class="ScrollHint__label">scroll</span>
           </button>
-
-          <button class="HelpButton" id="helpButton" type="button" aria-label="Словарь">
+          <button
+            class="HelpButton"
+            id="helpButton"
+            type="button"
+            aria-label="Словарь"
+          >
             <span class="HelpButton__glow" aria-hidden="true"></span>
             <span class="HelpButton__face">?</span>
           </button>
-
-          <img class="Alien" id="alien" src="images/alien.webp" alt="Пришелец Zib-Zib" />
+          <img
+            class="Alien"
+            id="alien"
+            src="images/alien.webp"
+            alt="Пришелец Zib-Zib"
+          />
         </div>
       </section>
       <section class="Language" id="language" hidden>
         <div class="Artboard">
-          <div class="Language__card" role="dialog" aria-modal="true" aria-labelledby="languageTitle">
+          <div
+            class="Language__card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="languageTitle"
+          >
             <h2 class="Title Title--language" id="languageTitle">
               <span class="Title__main">Zib-Zib</span>
               <span class="Title__sub">language</span>
             </h2>
-            <p class="Language__column Language__column--left" id="languageLeft"></p>
-            <p class="Language__column Language__column--right" id="languageRight"></p>
-            <button class="Language__close" id="languageClose" type="button" aria-label="Закрыть">
+            <p
+              class="Language__column Language__column--left"
+              id="languageLeft"
+            ></p>
+            <p
+              class="Language__column Language__column--right"
+              id="languageRight"
+            ></p>
+            <button
+              class="Language__close"
+              id="languageClose"
+              type="button"
+              aria-label="Закрыть"
+            >
               <img src="images/close.svg" alt="" />
             </button>
           </div>
@@ -89,13 +127,17 @@
               <span class="Title__sub">sinth</span>
             </h2>
             <p class="Hello__text" id="helloText"></p>
-            <button class="Hello__start" id="startButton" type="button">Начать</button>
+            <button class="Hello__start" id="startButton" type="button">
+              Начать
+            </button>
           </div>
         </div>
       </section>
     </main>
     <section class="Synths" id="synths" aria-label="Синтезаторы">
-      <div class="Marquee" aria-hidden="true"><div class="Marquee__track" data-marquee></div></div>
+      <div class="Marquee" aria-hidden="true">
+        <div class="Marquee__track" data-marquee></div>
+      </div>
       <div class="Artboard Artboard--synths">
         <div class="Synths__header" aria-hidden="true"></div>
         <div class="Synths__grid" id="synthGrid"></div>
