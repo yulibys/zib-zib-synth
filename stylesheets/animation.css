@@ -107,8 +107,51 @@
 .Hello__start {
   transition: transform 0.15s;
 }
-.TypeButton {
+.Knob__value,
+.Knob__pointer,
+.Switch__dot,
+.Row,
+.Toggle,
+.Action,
+.Pill,
+.Live,
+.Planet,
+.Orbit {
   transition:
     background 0.2s,
-    color 0.2s;
+    color 0.2s,
+    box-shadow 0.25s,
+    border-color 0.25s,
+    transform 0.15s,
+    left 0.2s,
+    opacity 0.2s;
+}
+.Beat::before {
+  transition:
+    transform 0.12s,
+    width 0.15s,
+    height 0.15s,
+    background 0.15s;
+}
+.Vu {
+  transition: transform 0.08s linear;
+}
+.Planet:hover,
+.Live:hover,
+.Play:hover {
+  transform: scale(1.06);
+}
+.Play:active,
+.Planet:active {
+  transform: scale(0.95);
+}
+.Planet.is-queued {
+  animation: queued 0.45s ease-in-out infinite alternate;
+}
+@keyframes queued {
+  to {
+    box-shadow:
+      0 0 calc(26 * var(--u)) calc(6 * var(--u)) rgba(255, 255, 255, 0.7),
+      0 0 calc(34 * var(--u)) calc(20 * var(--u)) rgba(84, 98, 46, 0.8);
+  }
 }

@@ -13,4 +13,7 @@
     animation: none;
     opacity: 1;
   }
+  .Planet.is-queued {
+    animation: none;
+  }
 }

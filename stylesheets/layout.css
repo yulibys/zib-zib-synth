@@ -466,125 +466,396 @@ body::after {
     0 0 calc(138.9 * var(--u)) calc(92 * var(--u)) var(--green);
   transform: translateY(calc((1 - var(--p)) * 100%));
 }
-.Synths__header {
+.A {
   position: absolute;
-  left: calc(69.66 * var(--u));
-  top: calc(78.08 * var(--u));
-  width: calc(1300.68 * var(--u));
-  height: calc(122.7 * var(--u));
-  background: var(--white);
-  z-index: 1;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
 }
-.Synth {
+.T {
   position: absolute;
-  top: calc(78.08 * var(--u));
-  width: calc(435.35 * var(--u));
-  height: calc(743.85 * var(--u));
-  border: calc(2 * var(--u)) solid var(--white);
-}
-.Synth--1 {
-  left: calc(69.66 * var(--u));
-}
-.Synth--2 {
-  left: calc(505.01 * var(--u));
-}
-.Synth--3 {
-  left: calc(934.99 * var(--u));
-}
-.Synth__name {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(9.09 * var(--u));
-  z-index: 2;
-  margin: 0;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  font-size: calc(var(--fs) * var(--u));
+  line-height: 1.2;
   font-weight: 400;
-  font-size: calc(96 * var(--u));
-  line-height: calc(101 * var(--u));
-  text-align: center;
-  color: var(--bg-2);
+  white-space: nowrap;
+  pointer-events: none;
 }
-.Control {
-  position: absolute;
-  left: calc(49.25 * var(--u));
-  width: calc(330 * var(--u));
-}
-.Control__label {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: calc(8 * var(--u));
-  height: calc(45 * var(--u));
+.T--light {
   font-weight: 300;
 }
-.Control__name {
-  font-size: calc(64 * var(--u));
-  line-height: calc(45 * var(--u));
+.T--center {
+  transform: translateX(-50%);
 }
-.Control__edge {
-  font-size: calc(24 * var(--u));
-  line-height: calc(17 * var(--u));
+.T--right {
+  transform: translateX(-100%);
 }
-.Pill {
-  position: relative;
-  width: calc(330 * var(--u));
-  height: calc(54.48 * var(--u));
-  border-radius: calc(29 * var(--u));
+.T--dark {
+  color: var(--bg-2);
+}
+.Artboard--deck {
+  z-index: 2;
+}
+.Artboard--deck button {
+  touch-action: manipulation;
+}
+.Panel {
+  z-index: 4;
+  background: var(--bg-2);
+  box-shadow: inset 0 0 0 calc(2 * var(--u)) var(--white);
+}
+.Panel__head {
+  background: var(--white);
+  color: var(--bg-2);
+}
+.Vu {
+  background: var(--bg-2);
+  transform-origin: 50% 100%;
+  transform: scaleY(var(--v, 0.5));
+}
+.Switch {
+  border-radius: calc(14 * var(--u));
+  background: var(--bg-2);
+}
+.Switch__dot {
+  position: absolute;
+  top: 50%;
+  left: calc(4 * var(--u));
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  border-radius: 50%;
+  background: var(--white);
+  opacity: 0.45;
+  transform: translateY(-50%);
+}
+.Switch[aria-pressed='true'] .Switch__dot {
+  left: calc(38 * var(--u));
+  opacity: 1;
+  box-shadow: 0 0 calc(8 * var(--u)) calc(1 * var(--u)) rgba(255, 255, 255, 0.7);
+}
+.Screen {
+  overflow: hidden;
   background: var(--bg-2);
   box-shadow:
-    inset 0 0 calc(15.3 * var(--u)) calc(2 * var(--u)) var(--white),
-    inset 0 0 calc(44.3 * var(--u)) calc(10 * var(--u)) var(--green);
+    inset 0 0 calc(26 * var(--u)) calc(6 * var(--u)) var(--green),
+    inset 0 0 calc(6 * var(--u)) calc(1 * var(--u)) var(--white);
 }
-.Pill__input {
+.Screen__canvas,
+.Screen > svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  margin: 0;
-  opacity: 0;
+}
+.Knob {
+  border-radius: 50%;
+  background: var(--bg-2);
+  box-shadow:
+    inset 0 0 calc(8 * var(--u)) calc(2 * var(--u)) var(--green),
+    inset 0 0 calc(3 * var(--u)) calc(0.6 * var(--u)) var(--white);
+  cursor: ns-resize;
+  touch-action: none;
+}
+.Knob svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.Knob__track,
+.Knob__value {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.Knob__track {
+  stroke: rgba(255, 255, 255, 0.18);
+}
+.Knob__value {
+  stroke: var(--white);
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+}
+.Knob__pointer {
+  fill: var(--white);
+}
+.Knob:focus-visible,
+.Bpm:focus-visible,
+.Pad:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
+.Row {
+  background: var(--bg-2);
+  color: var(--white);
+  box-shadow: inset 0 0 0 calc(1.5 * var(--u)) var(--white);
   cursor: pointer;
 }
-.Pill__dot {
-  position: absolute;
-  top: 50%;
-  left: calc(14 * var(--u) + var(--v, 0.5) * (302 - 30) * var(--u));
-  width: calc(30 * var(--u));
-  height: calc(30 * var(--u));
-  border-radius: 50%;
-  background: var(--white);
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-.Pill__input:focus-visible + .Pill__dot {
-  outline: 2px solid var(--white);
-  outline-offset: 4px;
-}
-.TypeButton {
-  display: grid;
-  place-items: center;
-  font-weight: 300;
-  font-size: calc(24 * var(--u));
-  line-height: calc(17 * var(--u));
-}
-.TypeButton[aria-pressed='true'] {
+.Row.is-active {
   background: var(--white);
   color: var(--bg-2);
 }
-.Control--volume {
-  top: calc(147.87 * var(--u));
+.Row__bar {
+  background: currentColor;
+  opacity: 0.18;
 }
-.Control--filter {
-  top: calc(230.85 * var(--u));
+.Row__bar.is-lit {
+  opacity: 1;
 }
-.Control--effect {
-  top: calc(310.64 * var(--u));
+.Row__jack {
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 0 0 calc(1.5 * var(--u)) var(--bg-2);
 }
-.Control--type {
-  top: calc(430.52 * var(--u));
+.Row.is-active .Row__jack {
+  box-shadow: 0 0 calc(8 * var(--u)) calc(2 * var(--u)) rgba(255, 255, 255, 0.8);
 }
-.Control--type .Control__list {
+.Toggle,
+.Action,
+.Pill,
+.Live {
+  background: var(--bg-2);
+  color: var(--white);
+  box-shadow:
+    inset 0 0 calc(9 * var(--u)) calc(2 * var(--u)) var(--green),
+    inset 0 0 calc(3.5 * var(--u)) calc(0.6 * var(--u)) var(--white);
+}
+.Toggle,
+.Action {
+  box-shadow:
+    inset 0 0 0 calc(1.2 * var(--u)) var(--white),
+    inset 0 0 calc(9 * var(--u)) calc(2 * var(--u)) var(--green),
+    inset 0 0 calc(3.5 * var(--u)) calc(0.6 * var(--u)) var(--white);
+}
+.Toggle[aria-pressed='true'],
+.Action:hover,
+.Action.is-flash {
+  background: var(--white);
+  color: var(--bg-2);
+  box-shadow: 0 0 calc(8 * var(--u)) rgba(255, 255, 255, 0.6);
+}
+.Row.is-active .Toggle {
+  background: var(--white);
+  color: var(--bg-2);
+  box-shadow: inset 0 0 0 calc(1.2 * var(--u)) var(--bg-2);
+}
+.Row.is-active .Toggle[aria-pressed='true'] {
+  background: var(--bg-2);
+  color: var(--white);
+}
+.Toggle--round {
+  border-radius: calc(14 * var(--u));
+  box-shadow: none;
+}
+.Toggle--round[aria-pressed='true'] {
+  background: var(--green);
+  color: var(--white);
+  box-shadow: 0 0 calc(10 * var(--u)) var(--green);
+}
+.Divider {
+  background: rgba(255, 255, 255, 0.35);
+}
+.Out {
+  background: var(--white);
+  opacity: 0.14;
+}
+.Out.is-lit,
+.Out.is-peak {
+  opacity: 1;
+}
+.Out--hot.is-lit {
+  background: var(--green);
+  box-shadow: 0 0 calc(6 * var(--u)) var(--green);
+}
+.Pill {
   display: grid;
-  gap: calc(6.09 * var(--u));
+  place-items: center;
+  border-radius: calc(20 * var(--u));
+}
+.Pill[aria-pressed='true'],
+.Live[aria-pressed='true'],
+.Live:active {
+  background: var(--white);
+  color: var(--bg-2);
+  box-shadow:
+    0 0 calc(10 * var(--u)) calc(1 * var(--u)) rgba(255, 255, 255, 0.5),
+    inset 0 0 calc(9 * var(--u)) calc(2 * var(--u)) rgba(84, 98, 46, 0.6);
+}
+.Icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.Env {
+  cursor: grab;
+  touch-action: none;
+}
+.Env__fill {
+  fill: rgba(84, 98, 46, 0.5);
+}
+.Env__line {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.Env__dot {
+  fill: var(--white);
+  filter: drop-shadow(0 0 3px var(--white));
+}
+.Pad {
+  cursor: crosshair;
+  touch-action: none;
+}
+.Pad__line {
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.Pad__dot {
+  fill: var(--white);
+  filter: drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 10px var(--green));
+}
+.Orbits {
+  z-index: 1;
+  pointer-events: none;
+}
+.Orbits button {
+  pointer-events: auto;
+}
+.Sweep {
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(84, 98, 46, 0) 0deg 285deg,
+    rgba(84, 98, 46, 0.45) 345deg,
+    rgba(226, 236, 196, 0.5) 360deg
+  );
+  transform: rotate(var(--a, 11.25deg));
+  -webkit-mask: radial-gradient(circle closest-side, transparent 27%, #000 31%, #000 97%, transparent 100%);
+  mask: radial-gradient(circle closest-side, transparent 27%, #000 31%, #000 97%, transparent 100%);
+}
+.Orbit {
+  border-radius: 50%;
+  border: calc(1.5 * var(--u)) solid rgba(255, 255, 255, 0.75);
+  box-shadow:
+    0 0 calc(8 * var(--u)) calc(1.5 * var(--u)) rgba(255, 255, 255, 0.35),
+    0 0 calc(22 * var(--u)) calc(8 * var(--u)) rgba(84, 98, 46, 0.7),
+    inset 0 0 calc(8 * var(--u)) calc(1.5 * var(--u)) rgba(255, 255, 255, 0.3),
+    inset 0 0 calc(22 * var(--u)) calc(8 * var(--u)) rgba(84, 98, 46, 0.7);
+}
+.Orbit.is-active,
+.Orbit.is-hit {
+  border-color: var(--white);
+  box-shadow:
+    0 0 calc(10 * var(--u)) calc(2.5 * var(--u)) rgba(255, 255, 255, 0.6),
+    0 0 calc(26 * var(--u)) calc(10 * var(--u)) rgba(84, 98, 46, 0.95),
+    inset 0 0 calc(10 * var(--u)) calc(2.5 * var(--u)) rgba(255, 255, 255, 0.45),
+    inset 0 0 calc(26 * var(--u)) calc(10 * var(--u)) rgba(84, 98, 46, 0.95);
+}
+.Beat {
+  border-radius: 50%;
+}
+.Beat::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(9 * var(--u));
+  height: calc(9 * var(--u));
+  border: calc(1.5 * var(--u)) solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+}
+.Beat.is-on::before {
+  width: calc(16 * var(--u));
+  height: calc(16 * var(--u));
+  border-color: var(--white);
+  background: var(--white);
+  box-shadow:
+    0 0 calc(6 * var(--u)) calc(1 * var(--u)) rgba(255, 255, 255, 0.8),
+    0 0 calc(12 * var(--u)) calc(4 * var(--u)) var(--green);
+}
+.Beat.is-now::before {
+  border-color: var(--white);
+  transform: translate(-50%, -50%) scale(1.45);
+}
+.Beat.is-out {
+  opacity: 0.15;
+}
+.Wires {
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+}
+.Wire {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.3;
+}
+.Wire.is-active {
+  stroke: var(--white);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 3px var(--white));
+}
+.Wire__pin {
+  fill: var(--white);
+}
+.Play {
+  z-index: 3;
+  padding: calc(22 * var(--u));
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow:
+    0 0 calc(22 * var(--u)) calc(3 * var(--u)) rgba(255, 255, 255, 0.55),
+    0 0 calc(30 * var(--u)) calc(18 * var(--u)) rgba(84, 98, 46, 0.6);
+}
+.Play svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.Play__tri {
+  fill: var(--bg);
+}
+.Play__pause {
+  fill: none;
+  stroke: var(--bg);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.Bpm {
+  z-index: 3;
+  cursor: ns-resize;
+  touch-action: none;
+}
+.Planet {
+  z-index: 3;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #6d7b42, var(--green-dark) 72%);
+  box-shadow:
+    0 0 calc(18 * var(--u)) calc(4 * var(--u)) rgba(84, 98, 46, 0.85),
+    inset 0 0 calc(10 * var(--u)) calc(2 * var(--u)) rgba(255, 255, 255, 0.25);
+}
+.Planet[aria-pressed='true'] {
+  background: var(--white);
+  box-shadow:
+    0 0 calc(22 * var(--u)) calc(3 * var(--u)) rgba(255, 255, 255, 0.6),
+    0 0 calc(30 * var(--u)) calc(18 * var(--u)) rgba(84, 98, 46, 0.6);
+}
+.Planet__name {
+  z-index: 3;
+}
+.Live {
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
 }
 .Credits {
   position: absolute;

@@ -52,115 +52,157 @@ const dictionary = {
   ]
 }
 
-const effectTitles = { shine: 'Shine', space: 'Space', squelch: 'Squelch' }
+const scale = [0, 2, 3, 5, 7, 8, 10]
+const progression = [0, 5, 2, 6]
+const radii = [128, 168, 208, 248, 288, 328]
+const center = [720, 470]
+const pinAngle = 168.75
+const waves = ['sine', 'square', 'sawtooth', 'triangle']
+const filterTypes = ['lowpass', 'highpass', 'bandpass']
+const noiseColors = { sine: 'brown', square: 'white', sawtooth: 'white', triangle: 'pink' }
 
-const waveTypes = ['square', 'sawtooth', 'triangle', 'sine']
-
-const controls = {
-  volume: { min: -40, max: 0, step: 1 },
-  filter: { min: 100, max: 8000, step: 1 },
-  shine: { min: 0, max: 15, step: 0.1 },
-  space: { min: 0, max: 1, step: 0.01 },
-  squelch: { min: 0.5, max: 12, step: 0.1 }
+const ranges = {
+  cutoff: { min: 60, max: 16000, log: true },
+  reso: { min: 0.2, max: 18 },
+  attack: { min: 0.001, max: 2, log: true },
+  decay: { min: 0.01, max: 2, log: true },
+  sustain: { min: 0, max: 1 },
+  release: { min: 0.01, max: 4, log: true },
+  rate: { min: 0.05, max: 12, log: true },
+  depth: { min: 0, max: 1 },
+  echo: { min: 0, max: 1 },
+  space: { min: 0, max: 1 },
+  drive: { min: 0, max: 1 },
+  crush: { min: 0, max: 1 },
+  volume: { min: -40, max: 6 },
+  pan: { min: -1, max: 1 },
+  detune: { min: -1200, max: 1200 },
+  glide: { min: 0, max: 0.4 },
+  rvSpace: { min: 0, max: 0.25 },
+  rvDecay: { min: 0.4, max: 12, log: true },
+  rvTone: { min: 300, max: 14000, log: true },
+  rvMix: { min: 0, max: 1 },
+  swing: { min: 0, max: 0.7 },
+  steps: { min: 1, max: 16, int: true },
+  chance: { min: 0.2, max: 1 },
+  out: { min: -36, max: 6 },
+  bpm: { min: 60, max: 180, int: true }
 }
 
-const bars = [
-  { arp: ['C5', 'Eb5', 'G5', 'Bb5', 'D6'], root: 'C3', fifth: 'G3' },
-  { arp: ['C5', 'Eb5', 'G5', 'Bb5', 'D6'], root: 'C3', fifth: 'G3' },
-  { arp: ['Eb5', 'G5', 'Ab5', 'C6', 'Eb6'], root: 'Ab2', fifth: 'Eb3' },
-  { arp: ['Eb5', 'G5', 'Ab5', 'Bb5', 'C6'], root: 'Ab2', fifth: 'Eb3' },
-  { arp: ['F5', 'Ab5', 'C6', 'Eb6', 'G6'], root: 'F2', fifth: 'C3' },
-  { arp: ['D5', 'G5', 'B5', 'D6', 'F6'], root: 'G2', fifth: 'D3' }
-]
-
-const arpOrder = [0, 2, 4, 3, 1, 3, 2, 4]
-const arpSteps = bars.flatMap((bar, b) =>
-  arpOrder.map((n, i) => ({
-    time: `${b}:${Math.floor(i / 2)}:${(i % 2) * 2}`,
-    noteName: bar.arp[n],
+const tracks = [
+  {
+    name: 'Zib-Zib',
+    kind: 'MembraneSynth',
+    base: 24,
+    fixed: true,
+    duration: '8n',
+    wave: 'sine', filter: 'lowpass', cutoff: 900, reso: 1,
+    attack: 0.001, decay: 0.35, sustain: 0.01, release: 0.3,
+    lfo: 'sine', rate: 0.5, depth: 0,
+    echo: 0, space: 0.08, drive: 0.2, crush: 0,
+    volume: -4, pan: 0, detune: 0, glide: 0.05
+  },
+  {
+    name: 'Stars',
+    kind: 'Synth',
+    base: 72,
     duration: '16n',
-    velocity: i % 2 ? 0.7 : 1
-  }))
-)
-
-const bassSteps = bars.flatMap((bar, b) => [
-  { time: `${b}:0:0`, noteName: bar.root, duration: '4n.', velocity: 0.9 },
-  { time: `${b}:1:2`, noteName: bar.fifth, duration: '8n', velocity: 0.5 },
-  { time: `${b}:2:0`, noteName: bar.root, duration: '4n', velocity: 0.75 },
-  { time: `${b}:3:2`, noteName: bar.fifth, duration: '8n', velocity: 0.45 }
-])
-
-const synths = [
-  {
-    id: 'synth1',
-    name: 'Synth1',
-    volume: -6,
-    gain: 11,
-    filter: 7000,
-    effect: 'shine',
-    shine: 3.5,
-    type: 'sine',
-    kind: 'FMSynth',
-    synth: {
-      harmonicity: 3,
-      modulationIndex: 3.5,
-      modulation: { type: 'sine' },
-      envelope: { attack: 0.002, decay: 1.1, sustain: 0.12, release: 1 },
-      modulationEnvelope: { attack: 0.002, decay: 0.35, sustain: 0.1, release: 0.4 }
-    },
-    fx: [
-      { type: 'PingPongDelay', options: { delayTime: '8n.', feedback: 0.3 }, wet: 0.3 },
-      { type: 'Reverb', options: { decay: 5, preDelay: 0.02 }, wet: 0.45 }
-    ],
-    sequence: { loopEnd: '6m', steps: arpSteps }
+    wave: 'sawtooth', filter: 'lowpass', cutoff: 2600, reso: 4,
+    attack: 0.005, decay: 0.18, sustain: 0.2, release: 0.25,
+    lfo: 'triangle', rate: 0.25, depth: 0.35,
+    echo: 0.35, space: 0.35, drive: 0, crush: 0,
+    volume: -15, pan: 0.15, detune: 0, glide: 0
   },
   {
-    id: 'synth2',
-    name: 'Synth2',
-    volume: -8,
-    gain: 7,
-    filter: 2200,
-    effect: 'space',
-    space: 0.55,
-    type: 'sawtooth',
+    name: 'Comet',
+    kind: 'Synth',
+    base: 36,
+    duration: '16n',
+    wave: 'square', filter: 'lowpass', cutoff: 520, reso: 6,
+    attack: 0.005, decay: 0.25, sustain: 0.5, release: 0.2,
+    lfo: 'sine', rate: 0.5, depth: 0,
+    echo: 0, space: 0.05, drive: 0.25, crush: 0,
+    volume: -12, pan: 0, detune: 0, glide: 0.03
+  },
+  {
+    name: 'Nebula',
     kind: 'PolySynth',
-    synth: { envelope: { attack: 1.2, decay: 0.8, sustain: 0.8, release: 2.5 } },
-    fx: [
-      { type: 'Chorus', options: { frequency: 0.4, delayTime: 3.5, depth: 0.6 }, wet: 0.5, start: true },
-      { type: 'FeedbackDelay', options: { delayTime: '4n.', feedback: 0.4 }, wet: 0.25 },
-      { type: 'Reverb', options: { decay: 8, preDelay: 0.05 }, wet: 0.55 }
-    ],
-    sequence: {
-      loopEnd: '6m',
-      steps: [
-        { time: '0:0:0', noteName: ['G3', 'Bb3', 'D4', 'Eb4'], duration: '1m.', velocity: 0.5 },
-        { time: '2:0:0', noteName: ['G3', 'Bb3', 'C4', 'Eb4'], duration: '1m.', velocity: 0.5 },
-        { time: '4:0:0', noteName: ['Ab3', 'C4', 'Eb4', 'G4'], duration: '2n.', velocity: 0.5 },
-        { time: '5:0:0', noteName: ['G3', 'C4', 'D4', 'F4'], duration: '4n.', velocity: 0.45 },
-        { time: '5:2:0', noteName: ['G3', 'B3', 'D4', 'F4'], duration: '4n.', velocity: 0.45 }
-      ]
-    }
+    base: 60,
+    chord: true,
+    duration: '2n',
+    wave: 'sawtooth', filter: 'lowpass', cutoff: 1400, reso: 1,
+    attack: 0.8, decay: 0.6, sustain: 0.7, release: 2.2,
+    lfo: 'sine', rate: 0.2, depth: 0.3,
+    echo: 0.15, space: 0.6, drive: 0, crush: 0,
+    volume: -22, pan: 0, detune: 0, glide: 0
   },
   {
-    id: 'synth3',
-    name: 'Synth3',
-    volume: -10,
-    gain: 5,
-    filter: 1400,
-    effect: 'squelch',
-    squelch: 2,
-    type: 'sawtooth',
-    kind: 'MonoSynth',
-    synth: {
-      portamento: 0.02,
-      filter: { type: 'lowpass', Q: 2, rolloff: -24 },
-      envelope: { attack: 0.01, decay: 0.3, sustain: 0.6, release: 0.3 },
-      filterEnvelope: { attack: 0.01, decay: 0.2, sustain: 0.5, release: 0.3, baseFrequency: 200, octaves: 2 }
-    },
-    fx: [{ type: 'Reverb', options: { decay: 2.5, preDelay: 0.01 }, wet: 0.12 }],
-    sequence: { loopEnd: '6m', steps: bassSteps }
+    name: 'Orbit',
+    kind: 'FMSynth',
+    base: 84,
+    duration: '8n',
+    wave: 'sine', filter: 'highpass', cutoff: 400, reso: 1,
+    attack: 0.002, decay: 0.5, sustain: 0.01, release: 1.2,
+    lfo: 'sine', rate: 3, depth: 0,
+    echo: 0.45, space: 0.5, drive: 0, crush: 0,
+    volume: -19, pan: 0.3, detune: 0, glide: 0
+  },
+  {
+    name: 'Pulse',
+    kind: 'NoiseSynth',
+    base: 0,
+    fixed: true,
+    duration: '16n',
+    wave: 'square', filter: 'highpass', cutoff: 5000, reso: 1.5,
+    attack: 0.001, decay: 0.06, sustain: 0.01, release: 0.05,
+    lfo: 'sine', rate: 0.5, depth: 0,
+    echo: 0.1, space: 0.15, drive: 0, crush: 0,
+    volume: -16, pan: -0.25, detune: 0, glide: 0
   }
 ]
+
+const melody = {
+  Stars: [0, 2, 4, 7, 4, 2, 0, 2, 4, 7, 9, 7, 4, 2, 4, 7],
+  Comet: [0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 7, 0, 0, 7, 4, 7],
+  Orbit: [7, 9, 11, 9, 7, 4, 9, 11, 14, 11, 9, 7, 4, 7, 9, 11]
+}
+
+const planets = [
+  {
+    name: 'zap zup', x: 470, y: 150,
+    rows: ['x...x...x...x...', '................', 'x.........x.....', 'x.......x.......', '......x.......x.', '..x...x...x...x.']
+  },
+  {
+    name: 'vip vop', x: 936, y: 150,
+    rows: ['x...x...x...x...', 'x.x.x.x.x.x.x.x.', 'x..x..x...x..x..', 'x.......x.......', '..........x.....', '..x.x.x...x.x.xx']
+  },
+  {
+    name: 'zib zub zab', x: 470, y: 760,
+    rows: ['x...x...x..xx...', 'xxxxxxxxxxxxxxxx', 'x.xx..x.x.xx..x.', 'x.......x.......', '...x......x...x.', 'x.xxx.xxx.xxx.xx']
+  },
+  {
+    name: 'zeb zab zab', x: 936, y: 760,
+    rows: ['................', 'x..x..x..x..x...', 'x...............', 'x...............', 'x..x..x...x..x..', '....x.......x...']
+  }
+]
+
+const liveButtons = [
+  { key: 'hold', title: 'Зажми, чтобы зациклить долю', icon: 'M12 9V27M18 9V27M24 9V27' },
+  { key: 'auto', title: 'Авто: каждые 4 такта следующая планета', icon: 'M11 25L25 11M14 11H25V22' },
+  { key: 'rewind', title: 'С начала', icon: 'M18 11L9 18L18 25ZM27 11L18 18L27 25Z' },
+  { key: 'zib', title: 'Голос Zib-Zib', icon: 'M18 8V28M9.3 13L26.7 23M9.3 23L26.7 13' }
+]
+
+const icons = {
+  sine: 'M1 8Q5.5 0 10 8T19 8T28 8T37 8',
+  square: 'M1 13V3H10V13H19V3H28V13H37',
+  sawtooth: 'M1 13L10 3V13L19 3V13L28 3V13L37 3',
+  triangle: 'M1 13L10 3L19 13L28 3L37 13',
+  lowpass: 'M1 6H22Q28 6 30 9L36 15',
+  highpass: 'M2 15L8 9Q10 6 16 6H37',
+  bandpass: 'M1 15Q10 15 14 9Q19 2 24 9Q28 15 37 15',
+  pause: 'M15 11V33M29 11V33'
+}
 
 const alienDelay = 200
 const ringStep = 300
@@ -169,7 +211,6 @@ const stepLap = 14
 
 const nodes = {}
 let alienOn = true
-let synthsOn = false
 
 function pingPong(audioBuffer) {
   const ctx = Tone.getContext().rawContext
@@ -216,45 +257,19 @@ async function buildAlien() {
   reverb.wet.value = alienVoice.reverb
 
   const source = await loadBuffer(alienVoice.url)
+  nodes.voiceBuffer = new Tone.ToneAudioBuffer(source)
   const loop = new Tone.ToneAudioBuffer(pingPong(source))
   const player = new Tone.Player({ url: loop, loop: true, fadeIn: 0, fadeOut: 0 }).connect(reverb)
   player.sync().start(0)
 
-  Tone.Transport.bpm.value = (60 * 4 * loopBars) / loop.duration
+  state.baseBpm = (60 * 4 * loopBars) / loop.duration
+  state.bpm = Math.round(state.baseBpm)
+  player.playbackRate = state.bpm / state.baseBpm
+  Tone.Transport.bpm.value = state.bpm
 
   channel.mute = !alienOn
   nodes.alien = { channel, player }
-}
-
-function buildSynth(s) {
-  const channel = new Tone.Channel({ volume: s.volume }).toDestination()
-  const level = new Tone.Volume(s.gain ?? 0).connect(channel)
-
-  let next = level
-  const fxNodes = {}
-  ;[...s.fx].reverse().forEach((fx) => {
-    const node = new Tone[fx.type](fx.options).connect(next)
-    fxNodes[fx.type] = node
-    if (node.wet) node.wet.value = fx.wet
-    if (fx.start) node.start()
-    next = node
-  })
-
-  const filter = new Tone.Filter({ type: 'lowpass', frequency: s.filter, rolloff: -24 }).connect(next)
-  const options = { ...s.synth, oscillator: { type: s.type } }
-
-  const synth = (s.kind === 'PolySynth' ? new Tone.PolySynth(Tone.Synth, options) : new Tone[s.kind](options)).connect(filter)
-
-  const part = new Tone.Part(
-    (time, note) => synth.triggerAttackRelease(note.noteName, note.duration, time, note.velocity ?? 0.8),
-    s.sequence.steps
-  ).start(0)
-  part.loopEnd = s.sequence.loopEnd
-  part.loop = true
-
-  channel.mute = !synthsOn
-  nodes[s.id] = { channel, level, gain: s.gain ?? 0, filter, synth, fx: fxNodes }
-  changeValue(s.id, s.effect, s[s.effect])
+  refreshAll()
 }
 
 let building = null
@@ -262,10 +277,9 @@ let building = null
 function build() {
   if (building) return building
   building = (async () => {
-
     Tone.Destination.chain(new Tone.Limiter(-1))
-    synths.forEach(buildSynth)
-
+    Tone.Transport.bpm.value = state.bpm
+    buildDeckAudio()
     try {
       await buildAlien()
     } catch (err) {
@@ -288,9 +302,10 @@ async function startAudio() {
   return build()
 }
 
-function startSynths() {
-  synthsOn = true
-  synths.forEach((s) => nodes[s.id] && (nodes[s.id].channel.mute = false))
+function startDeck() {
+  state.playing = true
+  state.pos = 0
+  refreshAll()
 }
 
 async function toggleAlien() {
@@ -300,121 +315,993 @@ async function toggleAlien() {
   return alienOn
 }
 
-function setOscillator(synth, values) {
-  if (synth.oscillator) Object.assign(synth.oscillator, values)
-  else synth.set({ oscillator: values })
+const state = {
+  playing: false,
+  pos: 0,
+  scene: 0,
+  queued: null,
+  auto: false,
+  hold: null,
+  selected: 1,
+  masterOn: true,
+  bpm: 121,
+  baseBpm: 121,
+  swing: 0,
+  chance: 1,
+  out: 0,
+  rvSpace: 0.03,
+  rvDecay: 4,
+  rvTone: 5000,
+  rvMix: 0.8,
+  lengths: tracks.map(() => 16),
+  muted: tracks.map(() => false),
+  solo: tracks.map(() => false),
+  scenes: planets.map((p) =>
+    p.rows.map((row, i) => ({
+      on: [...row].map((c) => c === 'x'),
+      deg: (melody[tracks[i].name] || Array(16).fill(0)).slice()
+    }))
+  )
 }
 
-function changeValue(id, property, value) {
-  const n = nodes[id]
-  if (!n) return
+const defaults = tracks.map((t) => ({ ...t }))
+const globalDefaults = { ...state }
+const trackKeys = ['wave', 'filter', 'cutoff', 'reso', 'attack', 'lfo', 'rate', 'echo', 'space', 'drive', 'crush', 'volume', 'pan', 'detune', 'glide', 'mute']
+let audio = null
 
-  switch (property) {
-    case 'volume':
-      n.channel.volume.rampTo(value, 0.05)
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+const toNorm = (key, v) => {
+  const r = ranges[key]
+  return clamp(r.log ? Math.log(v / r.min) / Math.log(r.max / r.min) : (v - r.min) / (r.max - r.min))
+}
+const fromNorm = (key, n) => {
+  const r = ranges[key]
+  const v = r.log ? r.min * Math.pow(r.max / r.min, n) : r.min + n * (r.max - r.min)
+  return r.int ? Math.round(v) : v
+}
+const pitch = (base, degree) => {
+  const d = ((degree % 7) + 7) % 7
+  return base + Math.floor(degree / 7) * 12 + scale[d]
+}
+const hz = (midi) => 440 * Math.pow(2, (midi - 69) / 12)
+
+function buildTrack(t, i) {
+  const channel = new Tone.Channel({ volume: t.volume, pan: t.pan }).connect(audio.master)
+  const echoSend = new Tone.Gain(t.echo).connect(audio.echo)
+  const spaceSend = new Tone.Gain(t.space).connect(audio.reverbIn)
+  const meter = new Tone.Meter({ smoothing: 0.8 })
+  channel.fan(echoSend, spaceSend, meter)
+
+  let crusher = null
+  try {
+    crusher = new Tone.BitCrusher(16)
+    crusher.wet.value = 0
+  } catch (err) {
+    crusher = null
+  }
+  const drive = new Tone.Distortion({ distortion: 0, wet: 0 })
+  const filter = new Tone.Filter({ type: t.filter, frequency: t.cutoff, Q: t.reso, rolloff: -12 })
+  const lfo = new Tone.LFO({ type: t.lfo, frequency: t.rate, min: t.cutoff, max: t.cutoff }).connect(filter.frequency).start()
+  const synth = t.kind === 'PolySynth' ? new Tone.PolySynth(Tone.Synth, { maxPolyphony: 8 }) : new Tone[t.kind]()
+
+  if (crusher) synth.chain(filter, drive, crusher, channel)
+  else synth.chain(filter, drive, channel)
+
+  audio.tracks[i] = { synth, filter, drive, crusher, lfo, channel, echoSend, spaceSend, meter }
+  trackKeys.forEach((key) => applyTrack(i, key))
+}
+
+function applyTrack(i, key) {
+  const t = tracks[i]
+  const n = audio && audio.tracks[i]
+  if (!n) return
+  const env = () => n.synth.set({ envelope: { attack: t.attack, decay: t.decay, sustain: t.sustain, release: t.release } })
+
+  switch (key) {
+    case 'wave':
+      n.synth.set(t.kind === 'NoiseSynth' ? { noise: { type: noiseColors[t.wave] } } : { oscillator: { type: t.wave } })
       break
     case 'filter':
-      n.filter.frequency.rampTo(value, 0.05)
+      n.filter.type = t.filter
       break
-    case 'shine':
-      n.synth.modulationIndex.rampTo(value, 0.05)
+    case 'cutoff':
+    case 'depth': {
+      const r = Math.pow(2, t.depth * 3)
+      n.lfo.min = Math.max(20, t.cutoff / r)
+      n.lfo.max = Math.min(18000, t.cutoff * r)
+      break
+    }
+    case 'reso':
+      n.filter.Q.rampTo(t.reso, 0.05)
+      break
+    case 'attack':
+    case 'decay':
+    case 'sustain':
+    case 'release':
+      env()
+      break
+    case 'lfo':
+      n.lfo.type = t.lfo
+      break
+    case 'rate':
+      n.lfo.frequency.rampTo(t.rate, 0.1)
+      break
+    case 'echo':
+      n.echoSend.gain.rampTo(t.echo, 0.05)
       break
     case 'space':
-      n.fx.Reverb.wet.rampTo(0.1 + value * 0.8, 0.1)
-      n.fx.FeedbackDelay.wet.rampTo(value * 0.5, 0.1)
-      n.fx.FeedbackDelay.feedback.rampTo(0.15 + value * 0.5, 0.1)
+      n.spaceSend.gain.rampTo(t.space, 0.05)
       break
-    case 'squelch':
-      n.synth.filter.Q.rampTo(value, 0.05)
-
-      n.level.volume.rampTo(n.gain - 0.75 * (value - 2), 0.05)
+    case 'drive':
+      n.drive.distortion = t.drive * 0.9
+      n.drive.wet.rampTo(Math.min(1, t.drive * 3), 0.05)
       break
-    case 'type':
-      setOscillator(n.synth, { type: value })
+    case 'crush':
+      if (n.crusher) {
+        n.crusher.set({ bits: Math.round(16 - t.crush * 13) })
+        n.crusher.wet.rampTo(t.crush > 0 ? 1 : 0, 0.05)
+      }
+      break
+    case 'volume':
+      n.channel.volume.rampTo(t.volume, 0.05)
+      break
+    case 'pan':
+      n.channel.pan.rampTo(t.pan, 0.05)
+      break
+    case 'detune':
+      if (t.kind !== 'NoiseSynth') n.synth.set({ detune: t.detune })
+      break
+    case 'glide':
+      if (t.kind === 'MembraneSynth') n.synth.set({ pitchDecay: 0.005 + t.glide * 0.5 })
+      else if (t.kind !== 'NoiseSynth') n.synth.set({ portamento: t.glide })
+      break
+    case 'mute':
+      n.channel.mute = state.muted[i]
+      n.channel.solo = state.solo[i]
       break
   }
 }
 
-const values = {}
+let reverbTimer = 0
 
-function el(tag, className, text) {
+function applyGlobal(key) {
+  if (!audio) return
+  switch (key) {
+    case 'rvSpace':
+    case 'rvDecay':
+      clearTimeout(reverbTimer)
+      reverbTimer = setTimeout(() => {
+        audio.reverb.decay = state.rvDecay
+        audio.reverb.preDelay = state.rvSpace
+      }, 250)
+      break
+    case 'rvTone':
+      audio.rvTone.frequency.rampTo(state.rvTone, 0.1)
+      break
+    case 'rvMix':
+      audio.rvReturn.gain.rampTo(state.rvMix, 0.1)
+      break
+    case 'swing':
+      Tone.Transport.swing = state.swing
+      break
+    case 'out':
+      audio.master.volume.rampTo(state.out, 0.05)
+      break
+    case 'masterOn':
+      audio.master.mute = !state.masterOn
+      break
+    case 'bpm':
+      Tone.Transport.bpm.rampTo(state.bpm, 0.1)
+      if (nodes.alien) nodes.alien.player.playbackRate = state.bpm / state.baseBpm
+      break
+  }
+}
+
+function trigger(i, step, time, root, degree) {
+  const t = tracks[i]
+  const synth = audio.tracks[i].synth
+  if (t.kind === 'NoiseSynth') synth.triggerAttackRelease(t.duration, time, step % 8 === 4 ? 1 : 0.45)
+  else if (t.fixed) synth.triggerAttackRelease(hz(t.base), t.duration, time, 0.95)
+  else if (t.chord) synth.triggerAttackRelease([0, 2, 4].map((d) => hz(pitch(t.base, root + degree + d))), t.duration, time, 0.6)
+  else synth.triggerAttackRelease(hz(pitch(t.base, root + degree)), t.duration, time, step % 4 === 0 ? 0.95 : 0.75)
+}
+
+function tick(time) {
+  if (!state.playing) return
+  if (state.pos % 16 === 0 && state.hold === null) {
+    const bar = state.pos / 16
+    if (state.queued !== null) {
+      state.scene = state.queued
+      state.queued = null
+    } else if (state.auto && bar > 0 && bar % 4 === 0) {
+      state.scene = (state.scene + 1) % planets.length
+    }
+  }
+  const pos = state.hold === null ? state.pos : state.hold + ((state.pos - state.hold) % 2)
+  const root = progression[Math.floor(pos / 16) % progression.length]
+  const played = []
+  tracks.forEach((t, i) => {
+    const s = pos % state.lengths[i]
+    const pat = state.scenes[state.scene][i]
+    if (pat.on[s] && Math.random() < state.chance) {
+      trigger(i, s, time, root, pat.deg[s])
+      played.push(i)
+    }
+  })
+  Tone.Draw.schedule(() => drawTick(pos, played), time)
+  state.pos++
+}
+
+function buildDeckAudio() {
+  audio = { tracks: [] }
+  audio.master = new Tone.Volume(state.out).toDestination()
+  audio.meter = new Tone.Meter({ channels: 2, smoothing: 0.75 })
+  audio.master.connect(audio.meter)
+  audio.echo = new Tone.PingPongDelay({ delayTime: '8n.', feedback: 0.38, wet: 1 }).connect(audio.master)
+  audio.reverbIn = new Tone.Gain(1)
+  audio.reverb = new Tone.Reverb({ decay: state.rvDecay, preDelay: state.rvSpace, wet: 1 })
+  audio.rvTone = new Tone.Filter({ type: 'lowpass', frequency: state.rvTone })
+  audio.rvReturn = new Tone.Gain(state.rvMix)
+  audio.reverbIn.chain(audio.reverb, audio.rvTone, audio.rvReturn, audio.master)
+  audio.echo.connect(new Tone.Gain(0.3).connect(audio.reverbIn))
+
+  audio.voice = new Tone.Volume(-2).connect(audio.master)
+  audio.voice.fan(new Tone.Gain(0.35).connect(audio.echo), new Tone.Gain(0.6).connect(audio.reverbIn))
+
+  tracks.forEach(buildTrack)
+  Tone.Transport.swingSubdivision = '16n'
+  ;['swing', 'out', 'masterOn'].forEach(applyGlobal)
+  new Tone.Loop(tick, '16n').start(0)
+}
+
+function playVoice() {
+  if (!audio || !nodes.voiceBuffer) return
+  const player = new Tone.Player(nodes.voiceBuffer).connect(audio.voice)
+  player.playbackRate = [0.85, 1, 1.15, 1.3][Math.floor(Math.random() * 4)]
+  player.start(Tone.now(), 0, Math.min(1.4, nodes.voiceBuffer.duration))
+  player.onstop = () => setTimeout(() => player.dispose(), 100)
+  pulse(1)
+}
+
+const svgNS = 'http://www.w3.org/2000/svg'
+const refreshers = []
+const view = { rows: [], rings: [], wires: [], pins: [], planets: [], live: {}, pulses: [], flash: 0, visible: false }
+
+function el(tag, className, parent, text) {
   const node = document.createElement(tag)
   if (className) node.className = className
   if (text !== undefined) node.textContent = text
+  if (parent) parent.appendChild(node)
   return node
 }
 
-const toNorm = (key, v) => {
-  const c = controls[key]
-  return key === 'filter' ? Math.log(v / c.min) / Math.log(c.max / c.min) : (v - c.min) / (c.max - c.min)
-}
-const fromNorm = (key, n) => {
-  const c = controls[key]
-  if (key === 'filter') return Math.round(c.min * Math.pow(c.max / c.min, n))
-  const v = c.min + n * (c.max - c.min)
-  return Math.round(v / c.step) * c.step
+function svgEl(tag, attrs, parent) {
+  const node = document.createElementNS(svgNS, tag)
+  Object.entries(attrs || {}).forEach(([k, v]) => node.setAttribute(k, v))
+  if (parent) parent.appendChild(node)
+  return node
 }
 
-function Slider(synth, key, title, slot = key) {
-  const root = el('div', 'Control Control--' + slot)
-  const label = el('label', 'Control__label')
-  const id = synth.id + '-' + key
-  label.htmlFor = id
-  label.append(el('span', 'Control__edge', 'min'), el('span', 'Control__name', title), el('span', 'Control__edge', 'max'))
+function place(node, x, y, w, h) {
+  node.classList.add('A')
+  node.style.setProperty('--x', x)
+  node.style.setProperty('--y', y)
+  if (w !== undefined) node.style.setProperty('--w', w)
+  if (h !== undefined) node.style.setProperty('--h', h)
+  return node
+}
 
-  const pill = el('div', 'Pill')
-  const input = el('input', 'Pill__input')
-  Object.assign(input, { id, type: 'range', min: 0, max: 1000, step: 1 })
-  input.value = Math.round(toNorm(key, synth[key]) * 1000)
-  const dot = el('span', 'Pill__dot')
+function label(parent, str, x, cy, size = 14, align = 'left', extra = '') {
+  const node = el('span', `T T--${align} ${size < 15 ? 'T--light' : ''} ${extra}`, parent, str)
+  node.style.setProperty('--x', x)
+  node.style.setProperty('--y', cy - size * 0.6)
+  node.style.setProperty('--fs', size)
+  return node
+}
 
-  const update = () => {
-    const n = input.valueAsNumber / 1000
-    pill.style.setProperty('--v', n)
-    changeValue(synth.id, key, fromNorm(key, n))
+function icon(parent, path, w, h, box = '0 0 38 16') {
+  const svg = svgEl('svg', { viewBox: box, 'aria-hidden': 'true', class: 'Icon' }, parent)
+  svg.style.width = `calc(${w} * var(--u))`
+  svg.style.height = `calc(${h} * var(--u))`
+  svgEl('path', { d: path }, svg)
+  return svg
+}
+
+function arcPath(cx, cy, r, a0, a1) {
+  const p = (a) => [cx + r * Math.cos((a * Math.PI) / 180), cy + r * Math.sin((a * Math.PI) / 180)]
+  const [x0, y0] = p(a0)
+  const [x1, y1] = p(a1)
+  return `M${x0.toFixed(2)} ${y0.toFixed(2)}A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`
+}
+
+function draggable(node, getN, setN, step = 0.02) {
+  let startY = 0
+  let startN = 0
+  node.addEventListener('pointerdown', (e) => {
+    node.setPointerCapture(e.pointerId)
+    startY = e.clientY
+    startN = getN()
+    node.classList.add('is-dragging')
+  })
+  node.addEventListener('pointermove', (e) => {
+    if (!node.hasPointerCapture(e.pointerId)) return
+    setN(clamp(startN + (startY - e.clientY) / (e.shiftKey ? 700 : 170)))
+  })
+  const end = () => node.classList.remove('is-dragging')
+  node.addEventListener('pointerup', end)
+  node.addEventListener('pointercancel', end)
+  node.addEventListener(
+    'wheel',
+    (e) => {
+      e.preventDefault()
+      setN(clamp(getN() - Math.sign(e.deltaY) * step * 1.5))
+    },
+    { passive: false }
+  )
+  node.addEventListener('keydown', (e) => {
+    const map = { ArrowUp: step, ArrowRight: step, ArrowDown: -step, ArrowLeft: -step, PageUp: 0.1, PageDown: -0.1 }
+    if (e.key in map) setN(clamp(getN() + map[e.key]))
+    else if (e.key === 'Home') setN(0)
+    else if (e.key === 'End') setN(1)
+    else return
+    e.preventDefault()
+  })
+}
+
+function Knob(parent, { cx, cy, d, name, key, get, set, reset, labelCy }) {
+  const node = place(el('div', 'Knob', parent), cx - d / 2, cy - d / 2, d, d)
+  Object.assign(node, { tabIndex: 0 })
+  node.setAttribute('role', 'slider')
+  node.setAttribute('aria-label', name)
+  node.setAttribute('aria-valuemin', 0)
+  node.setAttribute('aria-valuemax', 100)
+  const svg = svgEl('svg', { viewBox: `0 0 ${d} ${d}`, 'aria-hidden': 'true' }, node)
+  const r = d / 2 - 4
+  svgEl('path', { class: 'Knob__track', d: arcPath(d / 2, d / 2, r, 135, 405) }, svg)
+  const value = svgEl('path', { class: 'Knob__value' }, svg)
+  const pointer = svgEl('circle', { class: 'Knob__pointer', r: d > 30 ? 3 : 2 }, svg)
+  if (labelCy) label(parent, name, cx, labelCy, 14, 'center')
+
+  const refresh = () => {
+    const n = toNorm(key, get())
+    value.setAttribute('d', n > 0.004 ? arcPath(d / 2, d / 2, r, 135, 135 + 270 * n) : '')
+    const a = ((135 + 270 * n) * Math.PI) / 180
+    const pr = d / 2 - Math.max(7, d * 0.24)
+    pointer.setAttribute('cx', d / 2 + pr * Math.cos(a))
+    pointer.setAttribute('cy', d / 2 + pr * Math.sin(a))
+    node.setAttribute('aria-valuenow', Math.round(n * 100))
   }
-
-  input.addEventListener('input', update)
-  pill.style.setProperty('--v', input.valueAsNumber / 1000)
-  pill.append(input, dot)
-  root.append(label, pill)
-  return root
+  draggable(
+    node,
+    () => toNorm(key, get()),
+    (n) => {
+      set(fromNorm(key, n))
+      refresh()
+    }
+  )
+  node.addEventListener('dblclick', () => {
+    set(reset())
+    refresh()
+  })
+  refreshers.push(refresh)
+  refresh()
+  return node
 }
 
-function TypeList(synth) {
-  const root = el('div', 'Control Control--type')
-  const label = el('div', 'Control__label')
-  label.appendChild(el('span', 'Control__name', 'Type'))
-  const list = el('div', 'Control__list')
-
-  waveTypes.forEach((type) => {
-    const button = el('button', 'Pill TypeButton', type)
-    button.type = 'button'
-    button.setAttribute('aria-pressed', String(type === synth.type))
-    button.addEventListener('click', () => {
-      list.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === button)))
-      values[synth.id].type = type
-      changeValue(synth.id, 'type', type)
+function PillGroup(parent, items, get, set, name) {
+  const buttons = items.map((it) => {
+    const b = place(el('button', 'Pill', parent), it.x, it.y, it.w, it.h)
+    b.type = 'button'
+    b.setAttribute('aria-label', `${name}: ${it.value}`)
+    icon(b, icons[it.value], it.iw, it.ih)
+    b.addEventListener('click', () => {
+      set(it.value)
+      refresh()
     })
-    list.appendChild(button)
+    return b
+  })
+  const refresh = () => buttons.forEach((b, i) => b.setAttribute('aria-pressed', String(items[i].value === get())))
+  refreshers.push(refresh)
+  refresh()
+}
+
+const sel = () => tracks[state.selected]
+
+function setTrack(key, v, i = state.selected) {
+  tracks[i][key] = v
+  applyTrack(i, key)
+}
+
+function trackKnob(parent, key, name, cx, cy, d, labelCy) {
+  return Knob(parent, {
+    cx, cy, d, key, name, labelCy,
+    get: () => sel()[key],
+    set: (v) => setTrack(key, v),
+    reset: () => defaults[state.selected][key]
+  })
+}
+
+function globalKnob(parent, key, name, cx, cy, d, labelCy) {
+  return Knob(parent, {
+    cx, cy, d, key, name, labelCy,
+    get: () => state[key],
+    set: (v) => {
+      state[key] = v
+      applyGlobal(key)
+    },
+    reset: () => globalDefaults[key]
+  })
+}
+
+function refreshAll() {
+  refreshers.forEach((f) => f())
+}
+
+function select(i) {
+  state.selected = i
+  refreshAll()
+}
+
+function MuteSolo(parent, kind, i, x, y, w, h, round) {
+  const b = place(el('button', `Toggle ${round ? 'Toggle--round' : ''}`, parent), x, y, w, h)
+  b.type = 'button'
+  label(b, kind === 'muted' ? 'M' : 'S', w / 2, h / 2 + 1, 15, 'center')
+  b.addEventListener('click', (e) => {
+    e.stopPropagation()
+    const idx = i === null ? state.selected : i
+    state[kind][idx] = !state[kind][idx]
+    applyTrack(idx, 'mute')
+    refreshAll()
+  })
+  refreshers.push(() => {
+    const idx = i === null ? state.selected : i
+    b.setAttribute('aria-pressed', String(state[kind][idx]))
+    b.setAttribute('aria-label', `${kind === 'muted' ? 'Mute' : 'Solo'} ${tracks[idx].name}`)
+  })
+}
+
+function Screen(parent, x, y, w, h) {
+  return place(el('div', 'Screen', parent), x, y, w, h)
+}
+
+function buildLeft(deck) {
+  const p = place(el('section', 'Panel', deck), 30, 62, 350, 780)
+  p.setAttribute('aria-label', 'Master')
+  const head = place(el('div', 'Panel__head', p), 0, 0, 350, 54)
+  label(head, 'master', 16, 27, 29, 'left', 'T--dark')
+  view.vu = [10, 16, 22, 13].map((h, i) => place(el('span', 'Vu', head), 226 + i * 9, 14, 5, 26))
+  const sw = place(el('button', 'Switch', head), 272, 13, 62, 28)
+  sw.type = 'button'
+  sw.setAttribute('aria-label', 'Master on / off')
+  el('span', 'Switch__dot', sw)
+  sw.addEventListener('click', () => {
+    state.masterOn = !state.masterOn
+    applyGlobal('masterOn')
+    refreshAll()
+  })
+  refreshers.push(() => sw.setAttribute('aria-pressed', String(state.masterOn)))
+
+  label(p, 'reverb', 16, 76, 20)
+  const screen = Screen(p, 16, 92, 318, 112)
+  view.canvas = el('canvas', 'Screen__canvas', screen)
+  ;[['rvSpace', 'space'], ['rvDecay', 'decay'], ['rvTone', 'tone'], ['rvMix', 'mix']].forEach(([key, name], i) =>
+    globalKnob(p, key, name, 46 + i * 86, 228, 44, 265)
+  )
+
+  label(p, 'mixer', 16, 298, 20)
+  tracks.forEach((t, i) => {
+    const y = 314 + i * 45
+    const cy = y + 19
+    const row = place(el('div', 'Row', p), 16, y, 318, 38)
+    row.addEventListener('click', () => select(i))
+    const name = place(el('button', 'Row__name', row), 0, 0, 92, 38)
+    name.type = 'button'
+    name.setAttribute('aria-label', `Выбрать ${t.name}`)
+    label(name, t.name, 10, 19, 19)
+    const bars = Array.from({ length: 7 }, (_, b) => {
+      const h = 5 + b * 2.4
+      return place(el('span', 'Row__bar', row), 96 + b * 11, 28 - h, 7, h)
+    })
+    Knob(row, {
+      cx: 190, cy: 19, d: 26, key: 'pan', name: `pan ${t.name}`,
+      get: () => tracks[i].pan,
+      set: (v) => setTrack('pan', v, i),
+      reset: () => 0
+    })
+    MuteSolo(row, 'muted', i, 216, 7, 36, 24)
+    MuteSolo(row, 'solo', i, 260, 7, 36, 24)
+    place(el('span', 'Row__jack', row), 314, 15, 8, 8)
+    view.rows.push({ row, bars, lit: -1 })
+    refreshers.push(() => row.classList.toggle('is-active', state.selected === i))
   })
 
-  root.append(label, list)
-  return root
+  place(el('span', 'Divider', p), 16, 592, 318, 1.5)
+  label(p, 'pattern', 16, 616, 20)
+  globalKnob(p, 'swing', 'swing', 46, 656, 44, 692)
+  Knob(p, {
+    cx: 132, cy: 656, d: 44, key: 'steps', name: 'steps', labelCy: 692,
+    get: () => state.lengths[state.selected],
+    set: (v) => {
+      state.lengths[state.selected] = v
+      refreshSteps()
+    },
+    reset: () => 16
+  })
+  globalKnob(p, 'chance', 'chance', 218, 656, 44, 692)
+  globalKnob(p, 'out', 'out', 304, 656, 44, 692)
+
+  const actions = {
+    random: () => {
+      const pat = state.scenes[state.scene][state.selected]
+      const density = [0.35, 0.6, 0.4, 0.15, 0.3, 0.6][state.selected]
+      const degs = [0, 2, 4, 7, 9, 4, 2, 11]
+      pat.on = pat.on.map((_, s) => Math.random() < (s % 4 === 0 ? density + 0.25 : density))
+      pat.deg = pat.deg.map(() => degs[Math.floor(Math.random() * degs.length)])
+    },
+    clear: () => (state.scenes[state.scene][state.selected].on = Array(16).fill(false)),
+    shift: () => {
+      const pat = state.scenes[state.scene][state.selected]
+      pat.on.unshift(pat.on.pop())
+      pat.deg.unshift(pat.deg.pop())
+    }
+  }
+  Object.keys(actions).forEach((key, i) => {
+    const b = place(el('button', 'Action', p), 16 + i * 110, 708, 98, 30)
+    b.type = 'button'
+    label(b, key, 49, 15, 14, 'center')
+    b.addEventListener('click', () => {
+      actions[key]()
+      refreshSteps()
+      b.classList.remove('is-flash')
+      void b.offsetWidth
+      b.classList.add('is-flash')
+    })
+  })
+
+  view.out = [0, 1].map((row) => ({
+    peak: 0,
+    lit: -1,
+    cells: Array.from({ length: 32 }, (_, s) => place(el('span', `Out ${s > 17 ? 'Out--hot' : ''}`, p), 16 + s * 10, 750 + row * 12, 7, 8))
+  }))
 }
 
-function initSynths(grid) {
-  synths.forEach((synth, i) => {
-    values[synth.id] = { type: synth.type }
-    const column = el('article', 'Synth Synth--' + (i + 1))
-    column.append(
-      el('h3', 'Synth__name', synth.name),
-      Slider(synth, 'volume', 'Volume'),
-      Slider(synth, 'filter', 'Filter'),
-      Slider(synth, synth.effect, effectTitles[synth.effect], 'effect'),
-      TypeList(synth)
-    )
-    grid.appendChild(column)
+function buildRight(deck) {
+  const p = place(el('section', 'Panel', deck), 1060, 62, 350, 780)
+  p.setAttribute('aria-label', 'Выбранный трек')
+  const head = place(el('div', 'Panel__head', p), 0, 0, 350, 54)
+  const title = label(head, '', 16, 27, 30, 'left', 'T--dark')
+  refreshers.push(() => (title.textContent = sel().name))
+  MuteSolo(head, 'muted', null, 236, 13, 44, 28, true)
+  MuteSolo(head, 'solo', null, 290, 13, 44, 28, true)
+
+  label(p, 'wave', 16, 76, 20)
+  PillGroup(p, waves.map((w, i) => ({ value: w, x: 16 + i * 81, y: 92, w: 74, h: 32, iw: 38, ih: 16 })), () => sel().wave, (v) => setTrack('wave', v), 'wave')
+
+  label(p, 'filter', 16, 150, 20)
+  PillGroup(p, filterTypes.map((f, i) => ({ value: f, x: 16 + i * 60, y: 170, w: 54, h: 32, iw: 38, ih: 17 })), () => sel().filter, (v) => setTrack('filter', v), 'filter')
+  trackKnob(p, 'cutoff', 'cutoff', 232, 186, 44, 222)
+  trackKnob(p, 'reso', 'reso', 300, 186, 44, 222)
+
+  label(p, 'envelope', 16, 250, 20)
+  buildEnvelope(p)
+
+  label(p, 'lfo', 16, 378, 20)
+  PillGroup(p, waves.map((w, i) => ({ value: w, x: 16 + i * 48, y: 398, w: 42, h: 28, iw: 30, ih: 14 })), () => sel().lfo, (v) => setTrack('lfo', v), 'lfo')
+  trackKnob(p, 'rate', 'rate', 232, 412, 44, 448)
+  trackKnob(p, 'depth', 'depth', 300, 412, 44, 448)
+
+  label(p, 'fx', 16, 476, 20)
+  ;['echo', 'space', 'drive', 'crush'].forEach((key, i) => trackKnob(p, key, key, 46 + i * 86, 512, 44, 548))
+  buildPad(p)
+
+  label(p, 'channel', 16, 704, 20)
+  ;['volume', 'pan', 'detune', 'glide'].forEach((key, i) => trackKnob(p, key, key, 46 + i * 86, 734, 40, 766))
+}
+
+function buildEnvelope(p) {
+  const box = Screen(p, 16, 266, 318, 72)
+  const svg = svgEl('svg', { viewBox: '0 0 318 72', class: 'Env', role: 'img', 'aria-label': 'ADSR envelope' }, box)
+  const fill = svgEl('path', { class: 'Env__fill' }, svg)
+  const line = svgEl('path', { class: 'Env__line' }, svg)
+  const dots = [0, 1, 2, 3].map(() => svgEl('circle', { class: 'Env__dot', r: 4.5 }, svg))
+  const names = ['A', 'D', 'S', 'R'].map((n) => label(p, n, 0, 352, 14, 'center'))
+  const geo = () => {
+    const t = sel()
+    const ax = 16 + toNorm('attack', t.attack) * 60
+    const dx = ax + 6 + toNorm('decay', t.decay) * 60
+    const sy = 62 - t.sustain * 52
+    const sx = dx + 36
+    const rx = sx + 6 + toNorm('release', t.release) * 120
+    return { pts: [[10, 62], [ax, 10], [dx, sy], [sx, sy], [rx, 62]], ax, dx, sx }
+  }
+  const refresh = () => {
+    const { pts } = geo()
+    const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join('')
+    line.setAttribute('d', d)
+    fill.setAttribute('d', `${d}L${pts[4][0].toFixed(1)} 72L10 72Z`)
+    pts.slice(1).forEach(([x, y], i) => {
+      dots[i].setAttribute('cx', x)
+      dots[i].setAttribute('cy', y)
+      names[i].style.setProperty('--x', 16 + x)
+    })
+  }
+  let grab = -1
+  const point = (e) => {
+    const r = svg.getBoundingClientRect()
+    return [((e.clientX - r.left) / r.width) * 318, ((e.clientY - r.top) / r.height) * 72]
+  }
+  svg.addEventListener('pointerdown', (e) => {
+    const [x, y] = point(e)
+    const { pts } = geo()
+    let best = 1e9
+    pts.slice(1).forEach(([px, py], i) => {
+      const dist = Math.hypot(px - x, (py - y) * 0.6)
+      if (dist < best) {
+        best = dist
+        grab = i
+      }
+    })
+    svg.setPointerCapture(e.pointerId)
+  })
+  svg.addEventListener('pointermove', (e) => {
+    if (grab < 0 || !svg.hasPointerCapture(e.pointerId)) return
+    const [x, y] = point(e)
+    const g = geo()
+    const sus = clamp((62 - y) / 52)
+    if (grab === 0) setTrack('attack', fromNorm('attack', clamp((x - 16) / 60)))
+    if (grab === 1) {
+      setTrack('decay', fromNorm('decay', clamp((x - g.ax - 6) / 60)))
+      setTrack('sustain', sus)
+    }
+    if (grab === 2) setTrack('sustain', sus)
+    if (grab === 3) setTrack('release', fromNorm('release', clamp((x - g.sx - 6) / 120)))
+    refresh()
+  })
+  svg.addEventListener('pointerup', () => (grab = -1))
+  refreshers.push(refresh)
+}
+
+function buildPad(p) {
+  const box = Screen(p, 16, 566, 318, 120)
+  box.classList.add('Pad')
+  box.setAttribute('role', 'slider')
+  box.setAttribute('aria-label', 'XY pad: cutoff и echo')
+  box.tabIndex = 0
+  const svg = svgEl('svg', { viewBox: '0 0 318 120', 'aria-hidden': 'true' }, box)
+  const vx = svgEl('line', { class: 'Pad__line', y1: 0, y2: 120 }, svg)
+  const hy = svgEl('line', { class: 'Pad__line', x1: 0, x2: 318 }, svg)
+  const dot = svgEl('circle', { class: 'Pad__dot', r: 9 }, svg)
+  label(box, 'echo', 10, 14, 12)
+  label(box, 'cutoff', 308, 108, 12, 'right')
+  const refresh = () => {
+    const x = 10 + toNorm('cutoff', sel().cutoff) * 298
+    const y = 10 + (1 - sel().echo) * 100
+    vx.setAttribute('x1', x)
+    vx.setAttribute('x2', x)
+    hy.setAttribute('y1', y)
+    hy.setAttribute('y2', y)
+    dot.setAttribute('cx', x)
+    dot.setAttribute('cy', y)
+  }
+  const move = (e) => {
+    const r = box.getBoundingClientRect()
+    setTrack('cutoff', fromNorm('cutoff', clamp((e.clientX - r.left) / r.width)))
+    setTrack('echo', clamp(1 - (e.clientY - r.top) / r.height))
+    refreshAll()
+  }
+  box.addEventListener('pointerdown', (e) => {
+    box.setPointerCapture(e.pointerId)
+    move(e)
+  })
+  box.addEventListener('pointermove', (e) => box.hasPointerCapture(e.pointerId) && move(e))
+  box.addEventListener('keydown', (e) => {
+    const t = sel()
+    const dx = { ArrowLeft: -0.03, ArrowRight: 0.03 }[e.key] || 0
+    const dy = { ArrowUp: 0.05, ArrowDown: -0.05 }[e.key] || 0
+    if (!dx && !dy) return
+    e.preventDefault()
+    setTrack('cutoff', fromNorm('cutoff', clamp(toNorm('cutoff', t.cutoff) + dx)))
+    setTrack('echo', clamp(t.echo + dy))
+    refreshAll()
+  })
+  refreshers.push(refresh)
+}
+
+const stepXY = (r, c) => {
+  const a = ((-90 + c * 22.5) * Math.PI) / 180
+  return [center[0] + (r - 20) * Math.cos(a), center[1] + (r - 20) * Math.sin(a)]
+}
+
+function buildOrbits(deck) {
+  const orbits = place(el('div', 'Orbits', deck), 0, 0, 1440, 900)
+  view.sweep = place(el('div', 'Sweep', orbits), center[0] - 340, center[1] - 340, 680, 680)
+  radii.forEach((r, i) => {
+    const ring = place(el('div', 'Orbit', orbits), center[0] - r, center[1] - r, r * 2, r * 2)
+    const steps = Array.from({ length: 16 }, (_, c) => {
+      const [x, y] = stepXY(r, c)
+      const b = place(el('button', 'Beat', orbits), x - 11, y - 11, 22, 22)
+      b.type = 'button'
+      b.setAttribute('aria-label', `${tracks[i].name}, шаг ${c + 1}`)
+      b.addEventListener('click', () => {
+        const pat = state.scenes[state.scene][i]
+        pat.on[c] = !pat.on[c]
+        if (state.selected !== i) select(i)
+        refreshSteps()
+      })
+      return b
+    })
+    view.rings.push({ ring, steps, now: -1 })
+  })
+
+  const wires = svgEl('svg', { class: 'Wires A', viewBox: '0 0 1440 900', 'aria-hidden': 'true' }, deck)
+  place(wires, 0, 0, 1440, 900)
+  radii.forEach((r, i) => {
+    const a = (pinAngle * Math.PI) / 180
+    const px = center[0] + (r - 20) * Math.cos(a)
+    const py = center[1] + (r - 20) * Math.sin(a)
+    const sx = 30 + 16 + 318
+    const sy = 62 + 314 + i * 45 + 19
+    view.wires.push(svgEl('path', { class: 'Wire', d: `M${sx} ${sy}C${sx + 40} ${sy} ${px - 40} ${py} ${px} ${py}` }, wires))
+    svgEl('circle', { class: 'Wire__pin', cx: px, cy: py, r: 4.5 }, wires)
+  })
+  refreshers.push(() => {
+    view.wires.forEach((w, i) => w.classList.toggle('is-active', i === state.selected))
+    view.rings.forEach((r, i) => r.ring.classList.toggle('is-active', i === state.selected))
+  })
+
+  const play = place(el('button', 'Play', deck), center[0] - 46, center[1] - 46, 92, 92)
+  play.type = 'button'
+  const playIcon = svgEl('svg', { viewBox: '0 0 44.51 44.51', 'aria-hidden': 'true' }, play)
+  const playPath = svgEl('path', {}, playIcon)
+  play.addEventListener('click', togglePlay)
+  refreshers.push(() => {
+    play.setAttribute('aria-pressed', String(state.playing))
+    play.setAttribute('aria-label', state.playing ? 'Пауза' : 'Играть')
+    playPath.setAttribute('d', state.playing ? icons.pause : 'M37 19.5a3 3 0 0 1 0 5.2L12.5 38.8A3 3 0 0 1 8 36.2V8.3a3 3 0 0 1 4.5-2.6Z')
+    playPath.setAttribute('class', state.playing ? 'Play__pause' : 'Play__tri')
+  })
+
+  const bpm = place(el('div', 'Bpm', deck), center[0] - 50, center[1] + 40, 100, 26)
+  bpm.tabIndex = 0
+  bpm.setAttribute('role', 'slider')
+  bpm.setAttribute('aria-label', 'Темп')
+  const bpmText = label(bpm, '', 50, 13, 18, 'center')
+  draggable(
+    bpm,
+    () => toNorm('bpm', state.bpm),
+    (n) => {
+      state.bpm = fromNorm('bpm', n)
+      applyGlobal('bpm')
+      refreshAll()
+    },
+    1 / 120
+  )
+  refreshers.push(() => {
+    bpmText.textContent = `${state.bpm} bpm`
+    bpm.setAttribute('aria-valuenow', state.bpm)
+  })
+
+  planets.forEach((pl, k) => {
+    const b = place(el('button', 'Planet', deck), pl.x - 32, pl.y - 32, 64, 64)
+    b.type = 'button'
+    b.setAttribute('aria-label', `Сцена ${k + 1}: ${pl.name}`)
+    label(deck, pl.name, pl.x, pl.y + 48, 20, 'center', 'Planet__name')
+    b.addEventListener('click', () => goScene(k))
+    view.planets.push(b)
+  })
+  refreshers.push(() =>
+    view.planets.forEach((b, k) => {
+      b.setAttribute('aria-pressed', String(state.scene === k))
+      b.classList.toggle('is-queued', state.queued === k)
+    })
+  )
+
+  liveButtons.forEach((lb, i) => {
+    const b = place(el('button', 'Live', deck), 612 + i * 60, 808, 36, 36)
+    b.type = 'button'
+    b.title = lb.title
+    b.setAttribute('aria-label', lb.title)
+    icon(b, lb.icon, 36, 36, '0 0 36 36')
+    view.live[lb.key] = b
+  })
+  const hold = view.live.hold
+  hold.addEventListener('pointerdown', () => {
+    state.hold = state.pos
+    hold.setAttribute('aria-pressed', 'true')
+  })
+  ;['pointerup', 'pointerleave', 'pointercancel'].forEach((type) =>
+    hold.addEventListener(type, () => {
+      state.hold = null
+      hold.setAttribute('aria-pressed', 'false')
+    })
+  )
+  view.live.auto.addEventListener('click', () => {
+    state.auto = !state.auto
+    refreshAll()
+  })
+  refreshers.push(() => view.live.auto.setAttribute('aria-pressed', String(state.auto)))
+  view.live.rewind.addEventListener('click', () => {
+    state.pos = 0
+    drawTick(0, [])
+  })
+  view.live.zib.addEventListener('click', async () => {
+    await startAudio()
+    playVoice()
+  })
+}
+
+function refreshSteps() {
+  view.rings.forEach(({ steps }, i) => {
+    const pat = state.scenes[state.scene][i]
+    steps.forEach((b, c) => {
+      b.classList.toggle('is-on', pat.on[c])
+      b.classList.toggle('is-out', c >= state.lengths[i])
+      b.setAttribute('aria-pressed', String(pat.on[c]))
+    })
+  })
+}
+
+function goScene(k) {
+  if (state.playing) state.queued = state.queued === k ? null : k
+  else state.scene = k
+  refreshSteps()
+  refreshAll()
+}
+
+async function togglePlay() {
+  await startAudio()
+  state.playing = !state.playing
+  if (state.playing) state.pos = 0
+  refreshAll()
+}
+
+function drawTick(pos, played) {
+  const step = pos % 16
+  view.sweep.style.setProperty('--a', `${step * 22.5 + 11.25}deg`)
+  view.rings.forEach((r, i) => {
+    const s = pos % state.lengths[i]
+    if (r.now >= 0) r.steps[r.now].classList.remove('is-now')
+    r.steps[s].classList.add('is-now')
+    r.now = s
+    r.ring.classList.toggle('is-hit', played.includes(i))
+  })
+  played.forEach((i) => pulse(tracks[i].space))
+  if (step === 0) {
+    refreshSteps()
+    refreshAll()
+  }
+}
+
+function pulse(amount) {
+  if (amount <= 0.02) return
+  view.pulses.push({ r: 14, a: Math.min(1, amount * 1.4) })
+  view.flash = Math.min(1, view.flash + amount)
+  if (view.pulses.length > 24) view.pulses.shift()
+}
+
+const reflections = Array.from({ length: 26 }, (_, i) => {
+  const r = 26 + ((i * 47) % 120)
+  const a = ((200 + ((i * 83) % 140)) * Math.PI) / 180
+  return [159 + r * Math.cos(a), 124 + r * Math.sin(a), 1 + ((i * 7) % 5) / 4, 0.85 - r / 170]
+})
+
+let lastFrame = 0
+
+function drawReverb(dt) {
+  const c = view.canvas
+  const w = c.clientWidth
+  const h = c.clientHeight
+  if (!w) return
+  const dpr = devicePixelRatio || 1
+  if (c.width !== Math.round(w * dpr)) {
+    c.width = Math.round(w * dpr)
+    c.height = Math.round(h * dpr)
+  }
+  const ctx = c.getContext('2d')
+  ctx.setTransform((w * dpr) / 318, 0, 0, (h * dpr) / 112, 0, 0)
+  ctx.clearRect(0, 0, 318, 112)
+  const nD = toNorm('rvDecay', state.rvDecay)
+  const nS = toNorm('rvSpace', state.rvSpace)
+  const nT = toNorm('rvTone', state.rvTone)
+  const mix = state.rvMix
+  const count = 4 + Math.round(nD * 6)
+  const gap = 11 + nS * 9
+  const tint = (a) => `rgba(${Math.round(150 + 105 * nT)},${Math.round(165 + 90 * nT)},${Math.round(110 + 145 * nT)},${a})`
+  ctx.lineCap = 'round'
+  ctx.shadowColor = 'rgba(84,98,46,0.95)'
+  ctx.shadowBlur = 10
+  for (let i = 0; i < count; i++) {
+    const r = 20 + i * gap
+    ctx.strokeStyle = tint((1 - i / count) * (0.3 + 0.7 * mix))
+    ctx.lineWidth = Math.max(0.8, 2.4 - i * 0.16)
+    ctx.beginPath()
+    ctx.arc(159, 124, r, (190 * Math.PI) / 180, (350 * Math.PI) / 180)
+    ctx.stroke()
+  }
+  view.pulses = view.pulses.filter((p) => {
+    p.r += dt * (70 + nS * 90)
+    p.a *= Math.pow(0.5, dt / (0.25 + nD * 1.6))
+    if (p.a < 0.02 || p.r > 220) return false
+    ctx.strokeStyle = `rgba(255,255,255,${(p.a * (0.4 + 0.6 * mix)).toFixed(3)})`
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.arc(159, 124, p.r, Math.PI, Math.PI * 2)
+    ctx.stroke()
+    return true
+  })
+  ctx.shadowBlur = 0
+  reflections.forEach(([x, y, r, a]) => {
+    ctx.fillStyle = `rgba(255,255,255,${Math.max(0, a * (0.3 + 0.7 * mix) * (0.6 + view.flash * 0.6)).toFixed(3)})`
+    ctx.beginPath()
+    ctx.arc(x, y, r, 0, Math.PI * 2)
+    ctx.fill()
+  })
+  for (let i = 0; i < 7; i++) {
+    const bh = Math.exp(-i / (0.8 + nD * 5)) * 30
+    ctx.fillStyle = `rgba(255,255,255,${(0.25 + (bh / 30) * 0.6).toFixed(3)})`
+    ctx.fillRect(262 + i * 7, 96 - bh, 4, bh)
+  }
+  ctx.shadowColor = 'rgba(255,255,255,0.9)'
+  ctx.shadowBlur = 12 + view.flash * 14
+  ctx.fillStyle = '#fff'
+  ctx.beginPath()
+  ctx.arc(159, 104, 7 + view.flash * 3, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.shadowBlur = 0
+  view.flash *= Math.pow(0.5, dt / 0.15)
+}
+
+function drawMeters() {
+  if (!audio) return
+  view.rows.forEach((r, i) => {
+    const db = audio.tracks[i].meter.getValue()
+    const lit = clamp(Math.round(((db + 48) / 42) * 7), 0, 7)
+    if (lit === r.lit) return
+    r.lit = lit
+    r.bars.forEach((b, k) => b.classList.toggle('is-lit', k < lit))
+  })
+  const lr = audio.meter.getValue()
+  const levels = Array.isArray(lr) ? lr : [lr, lr]
+  view.out.forEach((o, k) => {
+    const lit = clamp(Math.round(((levels[k] + 54) / 54) * 32), 0, 32)
+    o.peak = lit >= o.peak ? lit : Math.max(lit, o.peak - 0.15)
+    const peak = Math.round(o.peak)
+    if (lit === o.lit && peak === o.peakShown) return
+    o.lit = lit
+    o.peakShown = peak
+    o.cells.forEach((c, s) => {
+      c.classList.toggle('is-lit', s < lit)
+      c.classList.toggle('is-peak', s === peak - 1 && peak > lit)
+    })
+  })
+  const m = clamp((Math.max(...levels) + 48) / 48)
+  view.vu.forEach((v, i) => v.style.setProperty('--v', clamp(0.25 + m * [0.6, 0.85, 1, 0.7][i] + (Math.random() - 0.5) * m * 0.2)))
+}
+
+function frame(t) {
+  const dt = Math.min(0.1, (t - lastFrame) / 1000)
+  lastFrame = t
+  if (view.visible) {
+    drawReverb(dt)
+    drawMeters()
+  }
+  requestAnimationFrame(frame)
+}
+
+function initDeck(deck) {
+  buildOrbits(deck)
+  buildLeft(deck)
+  buildRight(deck)
+  refreshSteps()
+  refreshAll()
+  drawTick(0, [])
+  requestAnimationFrame(frame)
+  addEventListener('keydown', (e) => {
+    if (!view.visible || e.target !== document.body) return
+    if (e.key === ' ') {
+      e.preventDefault()
+      togglePlay()
+    } else if (['1', '2', '3', '4'].includes(e.key)) goScene(Number(e.key) - 1)
   })
 }
 
@@ -568,6 +1455,7 @@ function initStage() {
     ticking = false
     const p = Math.min(1, Math.max(0, scrollY / innerHeight))
     synths.style.setProperty('--p', p.toFixed(4))
+    view.visible = p > 0.01
   }
   addEventListener(
     'scroll',
@@ -585,7 +1473,7 @@ function initStage() {
     scrollTo(0, 0)
     update()
     stage.classList.add('has-steps')
-    startSynths()
+    startDeck()
     setTimeout(() => stage.classList.add('has-alien'), reduceMotion ? 0 : alienDelay)
   }
 }
@@ -602,6 +1490,6 @@ function initScreens() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initSynths(document.getElementById('synthGrid'))
+  initDeck(document.getElementById('deck'))
   initScreens()
 })
