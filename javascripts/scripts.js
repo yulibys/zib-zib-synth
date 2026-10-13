@@ -170,27 +170,29 @@ const melody = {
 const planets = [
   {
     name: 'zap zup', x: 470, y: 150,
-    rows: ['x...x...x...x...', '................', 'x.........x.....', 'x.......x.......', '......x.......x.', '..x...x...x...x.']
+    rows: ['x...x...x...x...', '................', '................', '................', '................', '..x.x.x...x.x.x.']
   },
   {
     name: 'vip vop', x: 936, y: 150,
-    rows: ['x...x...x...x...', 'x.x.x.x.x.x.x.x.', 'x..x..x...x..x..', 'x.......x.......', '..........x.....', '..x.x.x...x.x.xx']
+    rows: ['..........x.....', '................', 'x.xx..x.x.xx..x.', '................', '................', '...............x']
   },
   {
     name: 'zib zub zab', x: 470, y: 760,
-    rows: ['x...x...x..xx...', 'xxxxxxxxxxxxxxxx', 'x.xx..x.x.xx..x.', 'x.......x.......', '...x......x...x.', 'x.xxx.xxx.xxx.xx']
+    rows: ['................', 'x.x.x.x.x.x.x.x.', '................', '................', '...x......x...x.', '................']
   },
   {
     name: 'zeb zab zab', x: 936, y: 760,
-    rows: ['................', 'x..x..x..x..x...', 'x...............', 'x...............', 'x..x..x...x..x..', '....x.......x...']
+    rows: ['................', '.x.....x.x.....x', '................', 'x.......x.......', 'x..x..x...x..x..', '................']
   }
 ]
 
+const autoSets = [[0], [0, 1], [0, 1, 2], [0, 1, 2, 3], [1, 3], [0, 2, 3]]
+
 const liveButtons = [
-  { key: 'hold', title: 'Зажми, чтобы зациклить долю', icon: 'M12 9V27M18 9V27M24 9V27' },
-  { key: 'auto', title: 'Авто: каждые 4 такта следующая планета', icon: 'M11 25L25 11M14 11H25V22' },
+  { key: 'hold', title: 'Зациклить долю: вкл / выкл', icon: 'M12 9V27M18 9V27M24 9V27' },
+  { key: 'auto', title: 'Авто: каждые 4 такта сам меняет набор планет', icon: 'M11 25L25 11M14 11H25V22' },
   { key: 'rewind', title: 'С начала', icon: 'M18 11L9 18L18 25ZM27 11L18 18L27 25Z' },
-  { key: 'zib', title: 'Голос Zib-Zib', icon: 'M18 8V28M9.3 13L26.7 23M9.3 23L26.7 13' }
+  { key: 'zib', title: 'Голос Zib-Zib в каждом такте: вкл / выкл', icon: 'M18 8V28M9.3 13L26.7 23M9.3 23L26.7 13' }
 ]
 
 const icons = {
@@ -296,6 +298,7 @@ async function startAudio() {
 }
 
 function startDeck() {
+  if (!state.discs.some(Boolean)) state.discs = planets.map((_, k) => k === 0 || k === 3)
   state.playing = true
   state.pos = 0
   refreshAll()
@@ -311,9 +314,11 @@ async function toggleAlien() {
 const state = {
   playing: false,
   pos: 0,
-  scene: 0,
-  queued: null,
+  discs: planets.map(() => false),
+  pending: planets.map(() => false),
   auto: false,
+  autoStep: 0,
+  voice: false,
   hold: null,
   selected: 1,
   masterOn: true,
@@ -329,12 +334,19 @@ const state = {
   lengths: tracks.map(() => 16),
   muted: tracks.map(() => false),
   solo: tracks.map(() => false),
-  scenes: planets.map((p) =>
-    p.rows.map((row, i) => ({
-      on: [...row].map((c) => c === 'x'),
-      deg: (melody[tracks[i].name] || Array(16).fill(0)).slice()
-    }))
-  )
+  flips: tracks.map(() => Array(16).fill(false)),
+  deg: tracks.map((t) => (melody[t.name] || Array(16).fill(0)).slice())
+}
+
+const discRows = planets.map((p) => p.rows.map((row) => [...row].map((c) => c === 'x')))
+
+function pattern(i) {
+  return state.flips[i].map((flip, s) => state.discs.some((on, k) => on && discRows[k][i][s]) !== flip)
+}
+
+function setPattern(i, on) {
+  const base = pattern(i).map((v, s) => v !== state.flips[i][s])
+  state.flips[i] = on.map((v, s) => v !== base[s])
 }
 
 const defaults = tracks.map((t) => ({ ...t }))
@@ -503,21 +515,22 @@ function tick(time) {
   if (!state.playing) return
   if (state.pos % 16 === 0 && state.hold === null) {
     const bar = state.pos / 16
-    if (state.queued !== null) {
-      state.scene = state.queued
-      state.queued = null
-    } else if (state.auto && bar > 0 && bar % 4 === 0) {
-      state.scene = (state.scene + 1) % planets.length
+    if (state.auto && bar > 0 && bar % 4 === 0) {
+      state.autoStep = (state.autoStep + 1) % autoSets.length
+      state.discs = planets.map((_, k) => autoSets[state.autoStep].includes(k))
+      state.pending = planets.map(() => false)
     }
+    state.pending.forEach((p, k) => p && (state.discs[k] = !state.discs[k]))
+    state.pending = planets.map(() => false)
+    if (state.voice) playVoice(time, progression[bar % progression.length])
   }
   const pos = state.hold === null ? state.pos : state.hold + ((state.pos - state.hold) % 2)
   const root = progression[Math.floor(pos / 16) % progression.length]
   const played = []
   tracks.forEach((t, i) => {
     const s = pos % state.lengths[i]
-    const pat = state.scenes[state.scene][i]
-    if (pat.on[s] && Math.random() < state.chance) {
-      trigger(i, s, time, root, pat.deg[s])
+    if (pattern(i)[s] && Math.random() < state.chance) {
+      trigger(i, s, time, root, state.deg[i][s])
       played.push(i)
     }
   })
@@ -547,13 +560,14 @@ function buildDeckAudio() {
   new Tone.Loop(tick, '16n').start(0)
 }
 
-function playVoice() {
+function playVoice(time, root) {
   if (!audio || !nodes.voiceBuffer) return
   const player = new Tone.Player(nodes.voiceBuffer).connect(audio.voice)
-  player.playbackRate = [0.85, 1, 1.15, 1.3][Math.floor(Math.random() * 4)]
-  player.start(Tone.now(), 0, Math.min(1.4, nodes.voiceBuffer.duration))
+  player.playbackRate = root === undefined ? [0.85, 1, 1.15, 1.3][Math.floor(Math.random() * 4)] : Math.pow(2, scale[root % 7] / 12)
+  player.start(time ?? Tone.now(), 0, Math.min(1.4, nodes.voiceBuffer.duration))
   player.onstop = () => setTimeout(() => player.dispose(), 100)
-  pulse(1)
+  if (time === undefined) pulse(1)
+  else Tone.Draw.schedule(() => pulse(1), time)
 }
 
 const svgNS = 'http://www.w3.org/2000/svg'
@@ -825,17 +839,19 @@ function buildLeft(deck) {
 
   const actions = {
     random: () => {
-      const pat = state.scenes[state.scene][state.selected]
-      const density = [0.35, 0.6, 0.4, 0.15, 0.3, 0.6][state.selected]
+      const i = state.selected
+      const density = [0.35, 0.6, 0.4, 0.15, 0.3, 0.6][i]
       const degs = [0, 2, 4, 7, 9, 4, 2, 11]
-      pat.on = pat.on.map((_, s) => Math.random() < (s % 4 === 0 ? density + 0.25 : density))
-      pat.deg = pat.deg.map(() => degs[Math.floor(Math.random() * degs.length)])
+      setPattern(i, Array.from({ length: 16 }, (_, s) => Math.random() < (s % 4 === 0 ? density + 0.25 : density)))
+      state.deg[i] = state.deg[i].map(() => degs[Math.floor(Math.random() * degs.length)])
     },
-    clear: () => (state.scenes[state.scene][state.selected].on = Array(16).fill(false)),
+    clear: () => setPattern(state.selected, Array(16).fill(false)),
     shift: () => {
-      const pat = state.scenes[state.scene][state.selected]
-      pat.on.unshift(pat.on.pop())
-      pat.deg.unshift(pat.deg.pop())
+      const i = state.selected
+      const on = pattern(i)
+      on.unshift(on.pop())
+      setPattern(i, on)
+      state.deg[i].unshift(state.deg[i].pop())
     }
   }
   Object.keys(actions).forEach((key, i) => {
@@ -1016,8 +1032,7 @@ function buildOrbits(deck) {
       b.type = 'button'
       b.setAttribute('aria-label', `${tracks[i].name}, шаг ${c + 1}`)
       b.addEventListener('click', () => {
-        const pat = state.scenes[state.scene][i]
-        pat.on[c] = !pat.on[c]
+        state.flips[i][c] = !state.flips[i][c]
         if (state.selected !== i) select(i)
         refreshSteps()
       })
@@ -1077,15 +1092,15 @@ function buildOrbits(deck) {
   planets.forEach((pl, k) => {
     const b = place(el('button', 'Planet', deck), pl.x - 32, pl.y - 32, 64, 64)
     b.type = 'button'
-    b.setAttribute('aria-label', `Сцена ${k + 1}: ${pl.name}`)
+    b.setAttribute('aria-label', `Диск ${k + 1}: ${pl.name}`)
     label(deck, pl.name, pl.x, pl.y + 48, 20, 'center', 'Planet__name')
-    b.addEventListener('click', () => goScene(k))
+    b.addEventListener('click', () => toggleDisc(k))
     view.planets.push(b)
   })
   refreshers.push(() =>
     view.planets.forEach((b, k) => {
-      b.setAttribute('aria-pressed', String(state.scene === k))
-      b.classList.toggle('is-queued', state.queued === k)
+      b.setAttribute('aria-pressed', String(state.discs[k]))
+      b.classList.toggle('is-queued', state.pending[k])
     })
   )
 
@@ -1097,17 +1112,11 @@ function buildOrbits(deck) {
     icon(b, lb.icon, 36, 36, '0 0 36 36')
     view.live[lb.key] = b
   })
-  const hold = view.live.hold
-  hold.addEventListener('pointerdown', () => {
-    state.hold = state.pos
-    hold.setAttribute('aria-pressed', 'true')
+  view.live.hold.addEventListener('click', () => {
+    state.hold = state.hold === null ? state.pos : null
+    refreshAll()
   })
-  ;['pointerup', 'pointerleave', 'pointercancel'].forEach((type) =>
-    hold.addEventListener(type, () => {
-      state.hold = null
-      hold.setAttribute('aria-pressed', 'false')
-    })
-  )
+  refreshers.push(() => view.live.hold.setAttribute('aria-pressed', String(state.hold !== null)))
   view.live.auto.addEventListener('click', () => {
     state.auto = !state.auto
     refreshAll()
@@ -1119,24 +1128,27 @@ function buildOrbits(deck) {
   })
   view.live.zib.addEventListener('click', async () => {
     await startAudio()
-    playVoice()
+    state.voice = !state.voice
+    if (state.voice) playVoice()
+    refreshAll()
   })
+  refreshers.push(() => view.live.zib.setAttribute('aria-pressed', String(state.voice)))
 }
 
 function refreshSteps() {
   view.rings.forEach(({ steps }, i) => {
-    const pat = state.scenes[state.scene][i]
+    const on = pattern(i)
     steps.forEach((b, c) => {
-      b.classList.toggle('is-on', pat.on[c])
+      b.classList.toggle('is-on', on[c])
       b.classList.toggle('is-out', c >= state.lengths[i])
-      b.setAttribute('aria-pressed', String(pat.on[c]))
+      b.setAttribute('aria-pressed', String(on[c]))
     })
   })
 }
 
-function goScene(k) {
-  if (state.playing) state.queued = state.queued === k ? null : k
-  else state.scene = k
+function toggleDisc(k) {
+  if (state.playing) state.pending[k] = !state.pending[k]
+  else state.discs[k] = !state.discs[k]
   refreshSteps()
   refreshAll()
 }
@@ -1145,6 +1157,7 @@ async function togglePlay() {
   await startAudio()
   state.playing = !state.playing
   if (state.playing) state.pos = 0
+  if (state.playing && !state.discs.some(Boolean)) state.discs[0] = true
   refreshAll()
 }
 
@@ -1294,7 +1307,7 @@ function initDeck(deck) {
     if (e.key === ' ') {
       e.preventDefault()
       togglePlay()
-    } else if (['1', '2', '3', '4'].includes(e.key)) goScene(Number(e.key) - 1)
+    } else if (['1', '2', '3', '4'].includes(e.key)) toggleDisc(Number(e.key) - 1)
   })
 }
 
