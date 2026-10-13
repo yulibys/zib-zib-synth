@@ -54,7 +54,7 @@ const dictionary = {
 
 const scale = [0, 2, 3, 5, 7, 8, 10]
 const progression = [0, 5, 2, 6]
-const radii = [128, 168, 208, 248, 288, 328]
+const radii = Array.from({ length: 9 }, (_, i) => 128 + i * 25)
 const center = [720, 470]
 const pinAngle = 168.75
 const waves = ['sine', 'square', 'sawtooth', 'triangle']
@@ -91,11 +91,7 @@ const ranges = {
 
 const tracks = [
   {
-    name: 'Zib-Zib',
-    kind: 'MembraneSynth',
-    base: 24,
-    fixed: true,
-    duration: '8n',
+    name: 'Zib-Zib', kind: 'MembraneSynth', base: 24, fixed: true, duration: '8n', density: 0.35,
     wave: 'sine', filter: 'lowpass', cutoff: 900, reso: 1,
     attack: 0.001, decay: 0.35, sustain: 0.01, release: 0.3,
     lfo: 'sine', rate: 0.5, depth: 0,
@@ -103,21 +99,23 @@ const tracks = [
     volume: -4, pan: 0, detune: 0, glide: 0.05
   },
   {
-    name: 'Stars',
-    kind: 'Synth',
-    base: 72,
-    duration: '16n',
-    wave: 'sawtooth', filter: 'lowpass', cutoff: 2600, reso: 4,
-    attack: 0.005, decay: 0.18, sustain: 0.2, release: 0.25,
-    lfo: 'triangle', rate: 0.25, depth: 0.35,
-    echo: 0.35, space: 0.35, drive: 0, crush: 0,
-    volume: -15, pan: 0.15, detune: 0, glide: 0
+    name: 'Blab', kind: 'NoiseSynth', base: 0, fixed: true, duration: '8n', density: 0.2,
+    wave: 'triangle', filter: 'bandpass', cutoff: 1400, reso: 2,
+    attack: 0.001, decay: 0.16, sustain: 0.01, release: 0.12,
+    lfo: 'sine', rate: 0.5, depth: 0,
+    echo: 0.15, space: 0.35, drive: 0.1, crush: 0,
+    volume: -12, pan: 0.05, detune: 0, glide: 0
   },
   {
-    name: 'Comet',
-    kind: 'Synth',
-    base: 36,
-    duration: '16n',
+    name: 'Pulse', kind: 'NoiseSynth', base: 0, fixed: true, duration: '16n', density: 0.6,
+    wave: 'square', filter: 'highpass', cutoff: 5000, reso: 1.5,
+    attack: 0.001, decay: 0.06, sustain: 0.01, release: 0.05,
+    lfo: 'sine', rate: 0.5, depth: 0,
+    echo: 0.1, space: 0.15, drive: 0, crush: 0,
+    volume: -16, pan: -0.25, detune: 0, glide: 0
+  },
+  {
+    name: 'Comet', kind: 'Synth', base: 36, duration: '16n', density: 0.4,
     wave: 'square', filter: 'lowpass', cutoff: 520, reso: 6,
     attack: 0.005, decay: 0.25, sustain: 0.5, release: 0.2,
     lfo: 'sine', rate: 0.5, depth: 0,
@@ -125,22 +123,23 @@ const tracks = [
     volume: -12, pan: 0, detune: 0, glide: 0.03
   },
   {
-    name: 'Nebula',
-    kind: 'PolySynth',
-    base: 60,
-    chord: true,
-    duration: '2n',
-    wave: 'sawtooth', filter: 'lowpass', cutoff: 1400, reso: 1,
-    attack: 0.8, decay: 0.6, sustain: 0.7, release: 2.2,
-    lfo: 'sine', rate: 0.2, depth: 0.3,
-    echo: 0.15, space: 0.6, drive: 0, crush: 0,
-    volume: -22, pan: 0, detune: 0, glide: 0
+    name: 'Zap', kind: 'Synth', base: 48, duration: '16n', density: 0.5,
+    wave: 'sawtooth', filter: 'lowpass', cutoff: 700, reso: 12,
+    attack: 0.002, decay: 0.15, sustain: 0.1, release: 0.1,
+    lfo: 'square', rate: 2, depth: 0.45,
+    echo: 0.2, space: 0.1, drive: 0.35, crush: 0,
+    volume: -18, pan: -0.2, detune: 0, glide: 0.06
   },
   {
-    name: 'Orbit',
-    kind: 'FMSynth',
-    base: 84,
-    duration: '8n',
+    name: 'Stars', kind: 'Synth', base: 72, duration: '16n', density: 0.6,
+    wave: 'sawtooth', filter: 'lowpass', cutoff: 2600, reso: 4,
+    attack: 0.005, decay: 0.18, sustain: 0.2, release: 0.25,
+    lfo: 'triangle', rate: 0.25, depth: 0.35,
+    echo: 0.35, space: 0.35, drive: 0, crush: 0,
+    volume: -15, pan: 0.15, detune: 0, glide: 0
+  },
+  {
+    name: 'Orbit', kind: 'FMSynth', base: 84, duration: '8n', density: 0.3,
     wave: 'sine', filter: 'highpass', cutoff: 400, reso: 1,
     attack: 0.002, decay: 0.5, sustain: 0.01, release: 1.2,
     lfo: 'sine', rate: 3, depth: 0,
@@ -148,41 +147,47 @@ const tracks = [
     volume: -19, pan: 0.3, detune: 0, glide: 0
   },
   {
-    name: 'Pulse',
-    kind: 'NoiseSynth',
-    base: 0,
-    fixed: true,
-    duration: '16n',
-    wave: 'square', filter: 'highpass', cutoff: 5000, reso: 1.5,
-    attack: 0.001, decay: 0.06, sustain: 0.01, release: 0.05,
+    name: 'Nebula', kind: 'PolySynth', base: 60, chord: true, duration: '2n', density: 0.15,
+    wave: 'sawtooth', filter: 'lowpass', cutoff: 1400, reso: 1,
+    attack: 0.8, decay: 0.6, sustain: 0.7, release: 2.2,
+    lfo: 'sine', rate: 0.2, depth: 0.3,
+    echo: 0.15, space: 0.6, drive: 0, crush: 0,
+    volume: -22, pan: 0, detune: 0, glide: 0
+  },
+  {
+    name: 'Vip-Vop', kind: 'Voice', base: 60, duration: '8n', density: 0.2,
+    wave: 'sine', filter: 'lowpass', cutoff: 6000, reso: 1,
+    attack: 0.005, decay: 0.3, sustain: 0.5, release: 0.08,
     lfo: 'sine', rate: 0.5, depth: 0,
-    echo: 0.1, space: 0.15, drive: 0, crush: 0,
-    volume: -16, pan: -0.25, detune: 0, glide: 0
+    echo: 0.4, space: 0.45, drive: 0, crush: 0.2,
+    volume: -8, pan: -0.1, detune: 0, glide: 0
   }
 ]
 
 const melody = {
   Stars: [0, 2, 4, 7, 4, 2, 0, 2, 4, 7, 9, 7, 4, 2, 4, 7],
   Comet: [0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 7, 0, 0, 7, 4, 7],
-  Orbit: [7, 9, 11, 9, 7, 4, 9, 11, 14, 11, 9, 7, 4, 7, 9, 11]
+  Orbit: [7, 9, 11, 9, 7, 4, 9, 11, 14, 11, 9, 7, 4, 7, 9, 11],
+  Zap: [0, 7, 0, 3, 0, 7, 10, 0, 0, 7, 0, 3, 5, 7, 3, 2],
+  'Vip-Vop': [0, 0, 4, 0, 2, 0, 7, 0, 0, 0, 4, 0, 5, 0, 4, 2]
 }
 
 const planets = [
   {
     name: 'zap zup', x: 470, y: 150,
-    rows: ['x...x...x...x...', '................', '................', '................', '................', '..x.x.x...x.x.x.']
+    rows: ['x...x...x...x...', '....x.......x...', '..x.x.x...x.x.x.', '................', '................', '................', '................', '................', '................']
   },
   {
     name: 'vip vop', x: 936, y: 150,
-    rows: ['..........x.....', '................', 'x.xx..x.x.xx..x.', '................', '................', '...............x']
+    rows: ['..........x.....', '...............x', '................', 'x.xx..x.x.xx..x.', 'x.xxx.xx.xx.x.xx', '................', '................', '................', '................']
   },
   {
     name: 'zib zub zab', x: 470, y: 760,
-    rows: ['................', 'x.x.x.x.x.x.x.x.', '................', '................', '...x......x...x.', '................']
+    rows: ['................', '................', '.x.....x.x.....x', '................', '................', 'x.x.x.x.x.x.x.x.', '...x......x...x.', '................', '......x.......x.']
   },
   {
     name: 'zeb zab zab', x: 936, y: 760,
-    rows: ['................', '.x.....x.x.....x', '................', 'x.......x.......', 'x..x..x...x..x..', '................']
+    rows: ['................', '................', '................', '................', '................', '.x.....x.x.....x', 'x..x..x...x..x..', 'x.......x.......', 'x.......x...x...']
   }
 ]
 
@@ -387,7 +392,7 @@ function buildTrack(t, i) {
   const drive = new Tone.Distortion({ distortion: 0, wet: 0 })
   const filter = new Tone.Filter({ type: t.filter, frequency: t.cutoff, Q: t.reso, rolloff: -12 })
   const lfo = new Tone.LFO({ type: t.lfo, frequency: t.rate, min: t.cutoff, max: t.cutoff }).connect(filter.frequency).start()
-  const synth = t.kind === 'PolySynth' ? new Tone.PolySynth(Tone.Synth, { maxPolyphony: 8 }) : new Tone[t.kind]()
+  const synth = t.kind === 'PolySynth' ? new Tone.PolySynth(Tone.Synth, { maxPolyphony: 8 }) : t.kind === 'Voice' ? new Tone.Gain(1) : new Tone[t.kind]()
 
   if (crusher) synth.chain(filter, drive, crusher, channel)
   else synth.chain(filter, drive, channel)
@@ -400,6 +405,14 @@ function applyTrack(i, key) {
   const t = tracks[i]
   const n = audio && audio.tracks[i]
   if (!n) return
+  if (t.kind === 'Voice') {
+    if (!['wave', 'attack', 'decay', 'sustain', 'release', 'detune', 'glide'].includes(key)) applyChain(n, t, i, key)
+    return
+  }
+  applyChain(n, t, i, key)
+}
+
+function applyChain(n, t, i, key) {
   const env = () => n.synth.set({ envelope: { attack: t.attack, decay: t.decay, sustain: t.sustain, release: t.release } })
 
   switch (key) {
@@ -505,6 +518,16 @@ function applyGlobal(key) {
 function trigger(i, step, time, root, degree) {
   const t = tracks[i]
   const synth = audio.tracks[i].synth
+  if (t.kind === 'Voice') {
+    if (!nodes.voiceBuffer) return
+    const player = new Tone.Player(nodes.voiceBuffer).connect(synth)
+    player.playbackRate = Math.pow(2, (pitch(t.base, root + degree) - 60) / 12)
+    player.fadeIn = Math.min(0.2, t.attack)
+    player.fadeOut = Math.min(0.3, t.release)
+    player.start(time, 0.05, 0.4)
+    player.onstop = () => setTimeout(() => player.dispose(), 100)
+    return
+  }
   if (t.kind === 'NoiseSynth') synth.triggerAttackRelease(t.duration, time, step % 8 === 4 ? 1 : 0.45)
   else if (t.fixed) synth.triggerAttackRelease(hz(t.base), t.duration, time, 0.95)
   else if (t.chord) synth.triggerAttackRelease([0, 2, 4].map((d) => hz(pitch(t.base, root + degree + d))), t.duration, time, 0.6)
@@ -752,7 +775,7 @@ function select(i) {
 function MuteSolo(parent, kind, i, x, y, w, h, round) {
   const b = place(el('button', `Toggle ${round ? 'Toggle--round' : ''}`, parent), x, y, w, h)
   b.type = 'button'
-  label(b, kind === 'muted' ? 'M' : 'S', w / 2, h / 2 + 1, 15, 'center')
+  label(b, kind === 'muted' ? 'M' : 'S', w / 2, h / 2 + 1, h < 24 ? 13 : 15, 'center')
   b.addEventListener('click', (e) => {
     e.stopPropagation()
     const idx = i === null ? state.selected : i
@@ -797,27 +820,26 @@ function buildLeft(deck) {
 
   label(p, 'mixer', 16, 298, 20)
   tracks.forEach((t, i) => {
-    const y = 314 + i * 45
-    const cy = y + 19
-    const row = place(el('div', 'Row', p), 16, y, 318, 38)
+    const y = 314 + i * 30
+    const row = place(el('div', 'Row', p), 16, y, 318, 26)
     row.addEventListener('click', () => select(i))
-    const name = place(el('button', 'Row__name', row), 0, 0, 92, 38)
+    const name = place(el('button', 'Row__name', row), 0, 0, 92, 26)
     name.type = 'button'
     name.setAttribute('aria-label', `Выбрать ${t.name}`)
-    label(name, t.name, 10, 19, 19)
+    label(name, t.name, 10, 13, 16)
     const bars = Array.from({ length: 7 }, (_, b) => {
-      const h = 5 + b * 2.4
-      return place(el('span', 'Row__bar', row), 96 + b * 11, 28 - h, 7, h)
+      const h = 4 + b * 2
+      return place(el('span', 'Row__bar', row), 96 + b * 11, 21 - h, 7, h)
     })
     Knob(row, {
-      cx: 190, cy: 19, d: 26, key: 'pan', name: `pan ${t.name}`,
+      cx: 190, cy: 13, d: 22, key: 'pan', name: `pan ${t.name}`,
       get: () => tracks[i].pan,
       set: (v) => setTrack('pan', v, i),
       reset: () => 0
     })
-    MuteSolo(row, 'muted', i, 216, 7, 36, 24)
-    MuteSolo(row, 'solo', i, 260, 7, 36, 24)
-    place(el('span', 'Row__jack', row), 314, 15, 8, 8)
+    MuteSolo(row, 'muted', i, 216, 3, 36, 20)
+    MuteSolo(row, 'solo', i, 260, 3, 36, 20)
+    place(el('span', 'Row__jack', row), 314, 9, 8, 8)
     view.rows.push({ row, bars, lit: -1 })
     refreshers.push(() => row.classList.toggle('is-active', state.selected === i))
   })
@@ -840,7 +862,7 @@ function buildLeft(deck) {
   const actions = {
     random: () => {
       const i = state.selected
-      const density = [0.35, 0.6, 0.4, 0.15, 0.3, 0.6][i]
+      const density = tracks[i].density
       const degs = [0, 2, 4, 7, 9, 4, 2, 11]
       setPattern(i, Array.from({ length: 16 }, (_, s) => Math.random() < (s % 4 === 0 ? density + 0.25 : density)))
       state.deg[i] = state.deg[i].map(() => degs[Math.floor(Math.random() * degs.length)])
@@ -1048,7 +1070,7 @@ function buildOrbits(deck) {
     const px = center[0] + (r - 20) * Math.cos(a)
     const py = center[1] + (r - 20) * Math.sin(a)
     const sx = 30 + 16 + 318
-    const sy = 62 + 314 + i * 45 + 19
+    const sy = 62 + 314 + i * 30 + 13
     view.wires.push(svgEl('path', { class: 'Wire', d: `M${sx} ${sy}C${sx + 40} ${sy} ${px - 40} ${py} ${px} ${py}` }, wires))
     svgEl('circle', { class: 'Wire__pin', cx: px, cy: py, r: 4.5 }, wires)
   })
