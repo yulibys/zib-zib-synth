@@ -442,9 +442,9 @@ body::after {
 }
 .Hello__start {
   position: absolute;
-  left: calc((581.5 - 214.13) * var(--u));
+  left: calc((550 - 214.13) * var(--u));
   top: calc((618.13 - 132.21) * var(--u));
-  width: calc(277 * var(--u));
+  width: calc(340 * var(--u));
   height: calc(62 * var(--u));
   border-radius: calc(40 * var(--u));
   background: var(--bg-2);

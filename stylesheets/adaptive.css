@@ -13,6 +13,7 @@
     animation: none;
     opacity: 1;
   }
+  .Hello__start,
   .Planet.is-queued {
     animation: none;
   }

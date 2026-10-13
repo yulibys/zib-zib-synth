@@ -106,6 +106,14 @@
 }
 .Hello__start {
   transition: transform 0.15s;
+  animation: pressMe 1.4s ease-in-out infinite;
+}
+@keyframes pressMe {
+  50% {
+    box-shadow:
+      0 0 calc(10 * var(--u)) calc(2 * var(--u)) rgba(255, 255, 255, 0.9),
+      0 0 calc(24 * var(--u)) calc(10 * var(--u)) var(--green);
+  }
 }
 .Knob__value,
 .Knob__pointer,

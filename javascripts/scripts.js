@@ -290,13 +290,6 @@ function build() {
   return building
 }
 
-function startZibZib() {
-  const unlock = () => Tone.start()
-  unlock().catch(() => {})
-  ;['pointerdown', 'keydown', 'touchend'].forEach((type) => addEventListener(type, unlock, { capture: true }))
-  build()
-}
-
 async function startAudio() {
   await Tone.start()
   return build()
@@ -1479,7 +1472,6 @@ function initStage() {
 }
 
 function initScreens() {
-  startZibZib()
   fillMarquees()
   fillHello()
   buildSteps()
