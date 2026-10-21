@@ -13,7 +13,7 @@
     animation: none;
     opacity: 1;
   }
-  .Hello__start,
+  .Stage.has-alien.is-waiting .PlayButton,
   .Planet.is-queued {
     animation: none;
   }

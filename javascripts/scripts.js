@@ -4,31 +4,7 @@ const stepsRight = [[423.73,74.86],[305.02,74.86],[216.71,74.86],[40.1,74.86],[3
 
 const marquee = 'Zap Zup, ZipZidi! '
 
-const hello = [
-  ['Привееет!! Меня зовут ', false],
-  ['Zib-Zib', true],
-  ['. Я прилетел с планеты ', false],
-  ['Zibzub', true],
-  [' и очень \n', false],
-  ['zap', true],
-  [' с тобой познакомица!! ', false],
-  ['Zib zib!!', true],
-  [' Я пока плоха знаю ваш земной \nязык, поэтому иногда говорю ', false],
-  ['zib-zub', true],
-  [' не правельно. Я ', false],
-  ['zib zub zab', true],
-  [' вашу планету и очень ', false],
-  ['zap', true],
-  [' найти тут новых ', false],
-  ['vip vop!!', true],
-  [' Можешь научить меня каким-нибудь земным словам? А я тибя научу своему языку!! ', false],
-  ['Blab?', true],
-  [' \n', false],
-  ['Zаp zub!!', true],
-  [' Ой, то есть харашо!! ', false]
-]
-
-const alienVoice = { url: 'sounds/zibzib.mp3', volume: -3, reverb: 0.12 }
+const alienVoice = { url: typeof zibzibSound === 'string' ? zibzibSound : 'sounds/zibzib.mp3', volume: -13, reverb: 0.12 }
 const loopBars = 6
 
 const dictionary = {
@@ -293,8 +269,18 @@ function build() {
       console.warn('Zib-Zib sound did not load:', err)
     }
     Tone.Transport.start('+0.1')
+    $('#stage').classList.remove('is-waiting')
   })()
   return building
+}
+
+function unlockAudio() {
+  startAudio().catch(() => {})
+  const again = () => {
+    startAudio().catch(() => {})
+    ;['pointerdown', 'keydown', 'touchend'].forEach((type) => removeEventListener(type, again, true))
+  }
+  ;['pointerdown', 'keydown', 'touchend'].forEach((type) => addEventListener(type, again, true))
 }
 
 async function startAudio() {
@@ -306,15 +292,11 @@ function startDeck() {
   if (!state.discs.some(Boolean)) state.discs = planets.map((_, k) => k === 0 || k === 3)
   state.playing = true
   state.pos = 0
+  refreshSteps()
   refreshAll()
 }
 
-async function toggleAlien() {
-  await startAudio()
-  alienOn = !alienOn
-  if (nodes.alien) nodes.alien.channel.mute = !alienOn
-  return alienOn
-}
+const audioRunning = () => Tone.context.state === 'running' && Boolean(nodes.alien)
 
 const state = {
   playing: false,
@@ -325,7 +307,7 @@ const state = {
   autoStep: 0,
   voice: false,
   hold: null,
-  selected: 1,
+  selected: 5,
   masterOn: true,
   bpm: 121,
   baseBpm: 121,
@@ -1347,15 +1329,6 @@ function fillMarquees() {
   })
 }
 
-function fillHello() {
-  const p = $('#helloText')
-  hello.forEach(([text, isAlienWord]) => {
-    const node = document.createElement(isAlienWord ? 'em' : 'span')
-    node.textContent = text
-    p.appendChild(node)
-  })
-}
-
 function buildSteps() {
   const ys = [...stepsLeft, ...stepsRight].map(([, y]) => y)
   const period = Math.max(...ys) - Math.min(...ys) + stepRow
@@ -1449,31 +1422,22 @@ function initIntro(onLeave) {
   })
 }
 
-function initHello(onStart) {
-  const card = $('#hello')
-
-  $('#startButton').addEventListener('click', () => {
-    startAudio()
-    card.classList.add('is-leaving')
-    setTimeout(() => {
-      card.hidden = true
-      onStart()
-    }, reduceMotion ? 0 : 400)
-  })
-
-  return () => (card.hidden = false)
-}
-
 function initStage() {
   const stage = $('#stage')
   const synths = $('#synths')
   const play = $('#playButton')
 
-  play.addEventListener('click', async () => {
-    const on = await toggleAlien()
-    stage.classList.toggle('is-alien-off', !on)
+  const setAlien = (on) => {
+    alienOn = on
+    if (nodes.alien) nodes.alien.channel.mute = !on
     play.setAttribute('aria-pressed', String(on))
     play.setAttribute('aria-label', on ? 'Выключить пришельца' : 'Включить пришельца')
+  }
+
+  play.addEventListener('click', async () => {
+    const wasSilent = !audioRunning()
+    await startAudio()
+    setAlien(wasSilent ? true : !alienOn)
   })
 
   $('#alienHint').addEventListener('click', () => scrollTo({ top: innerHeight, behavior: reduceMotion ? 'auto' : 'smooth' }))
@@ -1503,17 +1467,19 @@ function initStage() {
     stage.classList.add('has-steps')
     startDeck()
     setTimeout(() => stage.classList.add('has-alien'), reduceMotion ? 0 : alienDelay)
+    setTimeout(() => !audioRunning() && stage.classList.add('is-waiting'), 1500)
   }
 }
 
 function initScreens() {
   fillMarquees()
-  fillHello()
   buildSteps()
   initLanguage()
   const openStage = initStage()
-  const openHello = initHello(openStage)
-  initIntro(openHello)
+  initIntro(() => {
+    unlockAudio()
+    openStage()
+  })
 }
 
 document.addEventListener('DOMContentLoaded', () => {
